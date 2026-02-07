@@ -57,7 +57,7 @@ async def usefulness_check_agent(client: AsyncDedalus, article:str, research_top
         7. Determine the best role for this article in the research (primary source, background
            reading, counterargument, methodological reference, or not useful).
         8. Suggest related topics or keywords from the article that could help find additional sources.
-        9. Store 3 most useful quotes (2 sentences each max) and their suggested use(keep very brief) in useful 
+        9. Store 3-5 most useful quotes (2 sentences each max) and their suggested use(keep very brief) in useful 
             quotes section. 
 
         

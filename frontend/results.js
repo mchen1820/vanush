@@ -188,6 +188,62 @@ function updateBadges(results) {
     });
 }
 
+function updateQuotes(results) {
+    const quotesContainer = document.getElementById('quotes-container');
+    
+    if (!quotesContainer) return;
+    
+    quotesContainer.innerHTML = '';
+    
+    // Get quotes from evidence_check.evidence_items
+    const quotes = results.evidence_check?.evidence_items || [];
+    
+    // If no quotes found, show a message
+    if (quotes.length === 0) {
+        quotesContainer.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No key quotes extracted from this article.</p>';
+        return;
+    }
+    
+    // Render quotes (they're just strings, not objects)
+    quotes.slice(0, 5).forEach(quote => { // Limit to 5 quotes
+        const quoteItem = document.createElement('div');
+        quoteItem.className = 'quote-item';
+        quoteItem.innerHTML = `
+            <p class="quote-text">${quote}</p>
+        `;
+        quotesContainer.appendChild(quoteItem);
+    });
+}
+
+function loadAnalysisResults() {
+    const resultsJson = sessionStorage.getItem('analysisResult');
+    
+    if (!resultsJson) {
+        console.error('No analysis results found');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    try {
+        const results = JSON.parse(resultsJson);
+        console.log('Analysis results:', results);
+        
+        updateMetadata(results.metadata);
+        updateOverallScore(results.overall_credibility);
+        updateIndividualScores(results);
+        updateSummary(results);
+        updateQuotes(results); // ADD THIS LINE
+        
+        if (!results.hasPurpose) {
+            hideUsefulnessScore();
+        }
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        window.location.href = 'index.html';
+    }
+}
+
 function hideUsefulnessScore() {
     const usefulnessCard = document.querySelector('[data-score-type="Usefulness Check"]');
     if (usefulnessCard) {
@@ -494,7 +550,37 @@ function initializeScoreModal() {
                 modalTitle.textContent = scoreType;
                 modalScoreValue.textContent = scoreValue;
                 modalPie.style.setProperty('--p', scoreValue);
-                modalExplanation.textContent = explanation;
+                
+                // Clear previous content
+                modalExplanation.innerHTML = `<p>${explanation}</p>`;
+                
+                // Add topic-specific quotes for Usefulness Check
+                if (scoreType === 'Usefulness Check') {
+                    const results = JSON.parse(sessionStorage.getItem('analysisResult'));
+                    if (results.hasPurpose && results.usefulness_check?.useful_quotes && results.usefulness_check.useful_quotes.length > 0) {
+                        const quotesSection = document.createElement('div');
+                        quotesSection.className = 'modal-quotes-section';
+                        quotesSection.innerHTML = `
+                            <h4 style="margin-top: 24px; margin-bottom: 16px; color: var(--blue-600); font-size: 16px; font-weight: 600;">
+                                Relevant Quotes for Your Topic
+                            </h4>
+                        `;
+                        
+                        results.usefulness_check.useful_quotes.forEach(quoteObj => {
+                            const quoteEl = document.createElement('div');
+                            quoteEl.className = 'modal-quote-item';
+                            quoteEl.innerHTML = `
+                                <div class="modal-quote-text">"${quoteObj.quote}"</div>
+                                <div class="modal-quote-meta">
+                                    <div class="modal-quote-use"><strong>Suggested Use:</strong> ${quoteObj.suggested_use}</div>
+                                </div>
+                            `;
+                            quotesSection.appendChild(quoteEl);
+                        });
+                        
+                        modalExplanation.appendChild(quotesSection);
+                    }
+                }
 
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
