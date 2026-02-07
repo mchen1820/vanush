@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 dedalus_api_key = os.getenv('DEDALUS_API_KEY')
+print(dedalus_api_key)
 
 async def main():
     client = AsyncDedalus()

@@ -1,10 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>VANUSH</title>
+    <meta charset="UTF-8" />
+    <title>Article Credibility Analyzer</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Hello World</h1>
-    <p>This site is running in Docker.</p>
+    <div class="container">
+      <h1>Article Credibility Analyzer</h1>
+      <p class="subtitle">
+        Paste an article below to analyze its credibility for research purposes.
+      </p>
+
+      <textarea
+        id="article"
+        placeholder="Paste the full article text here..."
+      ></textarea>
+
+      <button onclick="analyze()">Analyze Credibility</button>
+
+      <div id="result" class="result hidden">
+        <h2>Analysis Result</h2>
+        <p>
+          (Backend not connected yet — this is where the credibility analysis
+          will appear.)
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function analyze() {
+        const result = document.getElementById("result");
+        result.classList.remove("hidden");
+      }
+    </script>
   </body>
 </html>
