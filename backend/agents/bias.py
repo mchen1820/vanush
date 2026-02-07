@@ -42,20 +42,20 @@ Follow these steps exactly:
       favoring a particular political party, team, etc.
 
 4. Compute an overall bias score from 0 to 100 using this logic:
-   - Start from a baseline of 0
-   - Increase the score based on:
+   - Start from a baseline of 100
+   - Decrease the score based on:
      • Frequency of biased wording
      • Strength of emotionally loaded language
      • Degree of persuasive framing
      • Lack of balance or counterpoints
-   - Higher scores indicate stronger linguistic bias
+   - Lower scores indicate stronger linguistic bias
 
 5. Assign a bias level label based on the score:
-   - 0–20: Very Low Bias
-   - 21–40: Low Bias
+   - 0–20: Very High Bias
+   - 21–40: High Bias
    - 41–60: Moderate Bias
-   - 61–80: High Bias
-   - 81–100: Very High Bias
+   - 61–80: Low Bias
+   - 81–100: Very Low Bias
 
 6. Calculate a confidence score (0–100) using the following process:
 
@@ -94,35 +94,35 @@ Output requirements:
 
     return BiasCheckResult.model_validate_json(result.final_output)
 
-# async def main():
-#     url = input("Provide URL to analyze for bias: ")
-#     client = AsyncDedalus()
-#     result = await bias_check_agent(client, url)
+async def main():
+    url = input("Provide URL to analyze for bias: ")
+    client = AsyncDedalus()
+    result = await bias_check_agent(client, url)
 
-#     print("\n🧭 Bias Check Results")
-#     print(f"   Overall Bias Score: {result.overall_score}/100")
-#     print(f"   Bias Level: {result.bias_level}")
-#     print(f"   Dominant Tone: {result.dominant_tone}")
-#     print(f"   Confidence: {result.confidence_score}/100")
-#     print(f"\n   Summary: {result.summary}")
+    print("\n🧭 Bias Check Results")
+    print(f"   Overall Bias Score: {result.overall_score}/100")
+    print(f"   Bias Level: {result.bias_level}")
+    print(f"   Dominant Tone: {result.dominant_tone}")
+    print(f"   Confidence: {result.confidence_score}/100")
+    print(f"\n   Summary: {result.summary}")
 
-#     if result.key_indicators:
-#         print("\n   Key Bias Indicators:")
-#         for indicator in result.key_indicators:
-#             print(f"     • {indicator}")
+    if result.key_indicators:
+        print("\n   Key Bias Indicators:")
+        for indicator in result.key_indicators:
+            print(f"     • {indicator}")
 
-#     if result.affected_topics:
-#         print("\n   Affected Topics:")
-#         for topic in result.affected_topics:
-#             print(f"     • {topic}")
+    if result.affected_topics:
+        print("\n   Affected Topics:")
+        for topic in result.affected_topics:
+            print(f"     • {topic}")
 
-#     if result.recommendations:
-#         print("\n   Recommendations:")
-#         for rec in result.recommendations:
-#             print(f"     • {rec}")
+    if result.recommendations:
+        print("\n   Recommendations:")
+        for rec in result.recommendations:
+            print(f"     • {rec}")
 
-#     return result
+    return result
 
-# if __name__ == "__main__":
-#     print("Running bias_check.py")
-#     asyncio.run(main())
+if __name__ == "__main__":
+    print("Running bias_check.py")
+    asyncio.run(main())
