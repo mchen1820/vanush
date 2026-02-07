@@ -5,7 +5,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import quote_plus, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -532,6 +532,118 @@ def build_organization_check(author_result: dict) -> dict:
     }
 
 
+def _extract_url(text: str) -> str | None:
+    match = re.search(r"https?://[^\s)]+", text)
+    if not match:
+        return None
+    return match.group(0).rstrip(".,;)")
+
+
+def _clean_recommendation_title(raw_text: str) -> str:
+    text = re.sub(r"https?://[^\s)]+", "", raw_text).strip()
+    text = re.sub(r"^[\-\d\.\)\s]+", "", text)
+    text = re.sub(r"\s+", " ", text).strip(" -:;,.")
+    return text
+
+
+def _build_recommendation_entry(raw_text: str, source: str, reason: str, tag: str) -> dict | None:
+    raw_text = (raw_text or "").strip()
+    if not raw_text:
+        return None
+
+    url = _extract_url(raw_text)
+    title = _clean_recommendation_title(raw_text)
+    if not title and url:
+        try:
+            host = urlparse(url).netloc.replace("www.", "").strip()
+            title = f"Related article from {host}" if host else "Related article"
+        except Exception:
+            title = "Related article"
+    if not title:
+        return None
+
+    if not url:
+        url = f"https://scholar.google.com/scholar?q={quote_plus(title)}"
+
+    return {
+        "title": title[:180],
+        "url": url,
+        "source": source,
+        "description": reason,
+        "tag": tag,
+    }
+
+
+def build_recommended_articles(author_result: dict, usefulness_result: dict) -> list[dict]:
+    """
+    Build clickable recommendations for frontend.
+    Falls back to Google Scholar search URLs when direct URLs are unavailable.
+    """
+    items: list[dict] = []
+    seen: set[str] = set()
+
+    def add(entry: dict | None) -> None:
+        if not entry:
+            return
+        key = f"{entry['title'].lower()}::{entry['url'].lower()}"
+        if key in seen:
+            return
+        seen.add(key)
+        items.append(entry)
+
+    for link in author_result.get("related_links") or []:
+        add(
+            _build_recommendation_entry(
+                link,
+                source="Related Article",
+                reason="Suggested as a similar article by author analysis.",
+                tag="Related",
+            )
+        )
+
+    for rec in author_result.get("recommendations") or []:
+        add(
+            _build_recommendation_entry(
+                rec,
+                source="Author Agent",
+                reason="Suggested from author credibility analysis.",
+                tag="Author",
+            )
+        )
+
+    for pub in author_result.get("notable_publications") or []:
+        add(
+            _build_recommendation_entry(
+                pub,
+                source="Author Publications",
+                reason="Notable publication from the same or related author.",
+                tag="Publication",
+            )
+        )
+
+    for topic in usefulness_result.get("related_topics") or []:
+        add(
+            _build_recommendation_entry(
+                topic,
+                source="Related Topic",
+                reason="Topic suggested by usefulness analysis.",
+                tag="Topic",
+            )
+        )
+
+    for rec in usefulness_result.get("recommendations") or []:
+        add(
+            _build_recommendation_entry(
+                rec,
+                source="Usefulness Agent",
+                reason="Suggested by usefulness analysis.",
+                tag="Usefulness",
+            )
+        )
+
+    return items[:3]
+
+
 def build_metadata(
     source: str,
     article_text: str,
@@ -590,7 +702,6 @@ def format_results(
     usefulness = results["usefulness"].model_dump()
     date = results["date"].model_dump() if "date" in results else {}
     synthesis = results["synthesis"].model_dump()
-    related_links = results['author'].model_dump()
 
     overall_credibility = round(clamp_score(synthesis.get("overall_credibility_score"), 0.0))
 
@@ -604,8 +715,8 @@ def format_results(
         "citation_check": citations,
         "organization_check": build_organization_check(author),
         "relevancy_check": build_relevancy_check(date, citations),
+        "recommended_articles": build_recommended_articles(author, usefulness),
         "synthesis": synthesis,
-        "related_links": related_links,
     }
 
 
