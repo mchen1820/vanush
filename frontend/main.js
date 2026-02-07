@@ -22,8 +22,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlInput = document.getElementById('url-input');
     const textInput = document.getElementById('text-input');
     const pdfInput = document.getElementById('pdf-input');
+    const fileText = document.querySelector('.file-text');
     const purposeInput = document.getElementById('purpose-input');
     const loading = document.getElementById('loading');
+    const defaultFileLabel = 'Choose PDF file';
+
+    if (pdfInput && fileText) {
+        pdfInput.addEventListener('change', function() {
+            const selected = this.files && this.files[0];
+            if (selected) {
+                fileText.textContent = selected.name;
+                fileText.title = selected.name;
+                if (urlInput) urlInput.value = '';
+                if (textInput) textInput.value = '';
+            } else {
+                fileText.textContent = defaultFileLabel;
+                fileText.title = '';
+            }
+        });
+    }
+
+    if (urlInput) {
+        urlInput.addEventListener('input', function() {
+            if (this.value.trim().length > 0 && pdfInput) {
+                pdfInput.value = '';
+                if (fileText) {
+                    fileText.textContent = defaultFileLabel;
+                    fileText.title = '';
+                }
+            }
+        });
+    }
+
+    if (textInput) {
+        textInput.addEventListener('input', function() {
+            if (this.value.trim().length > 0 && pdfInput) {
+                pdfInput.value = '';
+                if (fileText) {
+                    fileText.textContent = defaultFileLabel;
+                    fileText.title = '';
+                }
+            }
+        });
+    }
 
     if (analyzeBtn) {
         analyzeBtn.addEventListener('click', async function(e) {
@@ -34,16 +75,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const text = textInput?.value.trim();
             const pdfFile = pdfInput?.files[0];
             const purpose = purposeInput?.value.trim();
-
-            const inputCount = [Boolean(url), Boolean(text), Boolean(pdfFile)].filter(Boolean).length;
-
-            // Validate that exactly one input is provided
-            if (inputCount === 0) {
+            
+            // Validate that at least one input is provided
+            if (!url && !text && !pdfFile) {
                 showNotification('Please provide an article URL, text, or PDF file to analyze.', 'warning');
-                return;
-            }
-            if (inputCount > 1) {
-                showNotification('Use only one input method at a time (URL, text, or PDF).', 'warning');
                 return;
             }
 
@@ -53,12 +88,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 let result;
-                if (url) {
-                    result = await analyzeUrl(url, purpose);
-                } else if (text) {
-                    result = await analyzeText(text, purpose);
-                } else {
+                // Priority: PDF > URL > text
+                if (pdfFile) {
                     result = await analyzePdf(pdfFile, purpose);
+                } else if (url) {
+                    result = await analyzeUrl(url, purpose);
+                } else {
+                    result = await analyzeText(text, purpose);
                 }
 
                 // Store results in sessionStorage
@@ -297,6 +333,10 @@ async function analyzeText(text, purpose = '') {
 }
 
 async function analyzePdf(file, purpose = '') {
+    if (!file) {
+        throw new Error('No PDF file selected.');
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     if (purpose) {

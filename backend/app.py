@@ -359,7 +359,7 @@ def analyze_pdf():
     if key_error:
         return key_error
 
-    upload = request.files.get("file")
+    upload = request.files.get("file") or request.files.get("pdf") or request.files.get("pdfFile")
     topic = normalize_purpose(request.form.get("purpose"))
 
     if upload is None:
