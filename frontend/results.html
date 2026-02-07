@@ -34,50 +34,38 @@
       <div class="meta">
         <div class="meta-item">
           <span class="meta-label">Title:</span>
-          <span class="meta-value">The Future of Artificial Intelligence</span>
+          <span class="meta-value" id="article-title"></span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Author:</span>
-          <span class="meta-value">Jane Doe</span>
+          <span class="meta-value" id="article-author"></span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Date:</span>
-          <span class="meta-value">January 12, 2025</span>
+          <span class="meta-value" id="article-date"></span>
         </div>
       </div>
 
       <div class="preview">
         <h3 class="section-title">Excerpt</h3>
-        <p>
-          Artificial intelligence is rapidly transforming industries worldwide.
-          Experts argue that while AI offers unprecedented efficiency, it also
-          raises ethical concerns related to bias, transparency, and accountability...
-        </p>
+        <p id="article-preview"></p>
       </div>
 
       <div class="central-claim">
         <h3 class="section-title">Central Claim</h3>
-        <p>
-          AI development will lead to net positive outcomes for society, with economic benefits outweighing potential risks if proper governance frameworks are implemented.
-        </p>
+        <p id="article-claim"></p>
       </div>
 
       <div class="summary">
         <h3 class="section-title">Article Summary</h3>
         <div class="summary-content">
-          <p>
-            The article explores the current state and future trajectory of artificial intelligence across various industries. It examines both the transformative potential of AI technologies and the ethical challenges they present, ultimately arguing for a balanced approach to AI development that prioritizes responsible innovation.
-          </p>
+          <p id="article-summary"></p>
         </div>
       </div>
 
       <div class="findings">
         <h3 class="section-title">Key Findings</h3>
-        <div class="badges">
-          <span class="badge badge-warning">Potential Bias Detected</span>
-          <span class="badge badge-success">Factually Sound</span>
-          <span class="badge badge-info">Recent Publication</span>
-        </div>
+        <div class="badges" id="findings-badges"></div>
       </div>
     </div>
 
@@ -90,14 +78,14 @@
       </div>
 
       <div class="overall-score">
-        <div class="overall-pie" style="--p:78">
+        <div class="overall-pie" id="overall-pie" style="--p:0">
           <div class="pie-inner">
-            <span class="pie-value">78</span>
+            <span class="pie-value" id="overall-value">0</span>
             <span class="pie-label">%</span>
           </div>
         </div>
         <h3>Overall Credibility Score</h3>
-        <p class="score-description">Above Average - Generally trustworthy with minor concerns</p>
+        <p class="score-description" id="overall-description"></p>
       </div>
 
       <div class="score-divider"></div>
@@ -105,83 +93,83 @@
       <h3 class="subsection-title">Detailed Breakdown</h3>
       <p class="subsection-hint">Click any score for detailed explanation</p>
 
-      <div class="score-grid">
+      <div class="score-grid" id="score-grid">
 
         <div class="score-card score-animate" style="--delay: 0.1s"
              data-score-type="Evidence & Fact Check"
-             data-explanation="The article presents multiple claims supported by research and data. Most major assertions are backed by credible sources, though a few statements could benefit from additional citations. Statistical claims appear accurate and verifiable.">
-          <div class="pie" style="--p:70" data-score="70">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">70%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Evidence Quality Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 70%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
         <div class="score-card score-animate" style="--delay: 0.15s"
              data-score-type="Bias Check"
-             data-explanation="Moderate linguistic bias detected in the article's framing and word choice. The tone shows some persuasive elements and selective emphasis favoring certain perspectives. While not heavily biased, readers should be aware of the author's positioning and seek alternative viewpoints.">
-          <div class="pie" style="--p:60" data-score="60">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">60%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Bias & Framing Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 60%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
         <div class="score-card score-animate" style="--delay: 0.2s"
              data-score-type="Date & Relevancy"
-             data-explanation="Published recently with current information on the topic. The content addresses ongoing developments and contemporary issues in the field. Information appears up-to-date and relevant to present-day discussions.">
-          <div class="pie" style="--p:75" data-score="75">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">75%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Date & Relevancy Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 75%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
         <div class="score-card score-animate" style="--delay: 0.25s"
              data-score-type="Citation Check"
-             data-explanation="The article includes citations from a mix of academic and industry sources. While key claims are referenced, some important assertions lack proper citations. Source quality is generally good but could be more comprehensive for a stronger foundation.">
-          <div class="pie" style="--p:55" data-score="55">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">55%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Citation Validity Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 55%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
         <div class="score-card score-animate" style="--delay: 0.3s" 
              data-score-type="Author Credibility"
-             data-explanation="The author demonstrates relevant expertise in the field with professional credentials and a track record of quality work. However, some academic background in the subject matter would strengthen credibility further.">
-          <div class="pie" style="--p:65" data-score="65">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">65%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Author & Publisher Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 65%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
         <div class="score-card score-animate" style="--delay: 0.4s"
              data-score-type="Usefulness Check"
-             data-explanation="This article provides valuable insights for both professionals and general readers. The content offers actionable information and practical perspectives that can inform decision-making. Strong relevance to current discussions in the field.">
-          <div class="pie" style="--p:82" data-score="82">
+             data-explanation="">
+          <div class="pie" style="--p:0" data-score="0">
             <div class="pie-fill"></div>
-            <span class="pie-text">82%</span>
+            <span class="pie-text">0%</span>
           </div>
           <p class="score-label">Usefulness Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 82%"></div>
+            <div class="score-bar-fill" style="width: 0%"></div>
           </div>
         </div>
 
