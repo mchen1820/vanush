@@ -51,13 +51,12 @@ async def main():
     result = await claim_agent(client, url)  
     
     # Print results in clean format
-    print("\n📰 Claim Analysis Results")
-    print("=" * 60)
+    print("Claim Analysis Results")
     print(f"\n📍 Central Claim:")
     print(f"   {result.central_claim}")
-    print(f"\n📝 Summary:")
+    print(f" Summary:")
     print(f"   {result.summary}")
-    print(f"\n📊 Scores:")
+    print(f" Scores:")
     print(f"   Overall Score: {result.overall_score}/100")
     print(f"   Confidence Score: {result.confidence_score}/100")
     
