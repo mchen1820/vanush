@@ -1,38 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Article Credibility Analyzer</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="container">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article Credibility Analyzer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background elements -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="container fade-in">
+    <!-- Header with icon -->
+    <div class="header-section">
+      <div class="icon-wrapper">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
       <h1>Article Credibility Analyzer</h1>
-      <p class="subtitle">
-        Paste an article below to analyze its credibility for research purposes.
-      </p>
+      <p class="subtitle">Upload or paste an article to analyze credibility and bias</p>
+    </div>
 
-      <textarea
-        id="article"
-        placeholder="Paste the full article text here..."
-      ></textarea>
+    <!-- Input cards with staggered animation -->
+    <div class="cards-grid">
+      <div class="card card-animate" style="--delay: 0.1s">
+        <div class="card-header">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          <h2>Analyze via Link</h2>
+        </div>
+        <div class="input-wrapper">
+          <input type="text" placeholder="Paste article URL here" id="url-input" />
+          <div class="input-glow"></div>
+        </div>
+      </div>
 
-      <button onclick="analyze()">Analyze Credibility</button>
+      <div class="card card-animate" style="--delay: 0.2s">
+        <div class="card-header">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h2>Analyze via Text</h2>
+        </div>
+        <div class="input-wrapper">
+          <textarea placeholder="Paste article text here" id="text-input"></textarea>
+          <div class="input-glow"></div>
+        </div>
+      </div>
 
-      <div id="result" class="result hidden">
-        <h2>Analysis Result</h2>
-        <p>
-          (Backend not connected yet — this is where the credibility analysis
-          will appear.)
-        </p>
+      <div class="card card-animate" style="--delay: 0.3s">
+        <div class="card-header">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          <h2>Analyze via PDF</h2>
+        </div>
+        <div class="file-upload-wrapper">
+          <input type="file" accept=".pdf" id="pdf-input" />
+          <label for="pdf-input" class="file-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <span class="file-text">Choose file or drag here</span>
+          </label>
+          <div class="input-glow"></div>
+        </div>
       </div>
     </div>
 
-    <script>
-      function analyze() {
-        const result = document.getElementById("result");
-        result.classList.remove("hidden");
-      }
-    </script>
-  </body>
+    <!-- Enhanced analyze button -->
+    <div class="button-wrapper card-animate" style="--delay: 0.4s">
+      <a href="results.html" class="analyze-btn">
+        <span class="btn-text">Analyze Article</span>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+        <div class="btn-shine"></div>
+      </a>
+    </div>
+
+    <!-- Feature highlights -->
+    <div class="features card-animate" style="--delay: 0.5s">
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <span>Instant Analysis</span>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <span>Multi-factor Scoring</span>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <span>Deep Fact Checking</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>

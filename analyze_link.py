@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 dedalus_api_key = os.getenv('DEDALUS_API_KEY')
 
-async def analyze_agent(client, url):
+async def analyze_agent(client, url) -> str:
     """Agent to analyze a URL and return structured analysis"""
     runner = DedalusRunner(client)
     result = await runner.run(

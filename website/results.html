@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Results - Article Credibility Analyzer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background elements -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Back button -->
+  <a href="index.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+    </svg>
+    Back to Analyzer
+  </a>
+
+  <div class="results-container">
+    
+    <!-- LEFT: Article Preview -->
+    <div class="left-panel slide-in-left">
+      <div class="panel-header">
+        <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h2>Article Preview</h2>
+      </div>
+
+      <div class="meta">
+        <div class="meta-item">
+          <span class="meta-label">Title:</span>
+          <span class="meta-value">The Future of Artificial Intelligence</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Author:</span>
+          <span class="meta-value">Jane Doe</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Date:</span>
+          <span class="meta-value">January 12, 2025</span>
+        </div>
+      </div>
+
+      <div class="preview">
+        <h3 class="section-title">Excerpt</h3>
+        <p>
+          Artificial intelligence is rapidly transforming industries worldwide.
+          Experts argue that while AI offers unprecedented efficiency, it also
+          raises ethical concerns related to bias, transparency, and accountability...
+        </p>
+      </div>
+
+      <div class="summary">
+        <h3 class="section-title">Overall Summary</h3>
+        <div class="summary-content">
+          <p>
+            This article presents an optimistic view of AI development, emphasizing
+            benefits while downplaying potential risks. The tone is persuasive and
+            selectively highlights expert opinions aligned with the author's stance.
+          </p>
+        </div>
+      </div>
+
+      <!-- Key findings badges -->
+      <div class="findings">
+        <h3 class="section-title">Key Findings</h3>
+        <div class="badges">
+          <span class="badge badge-warning">Potential Bias Detected</span>
+          <span class="badge badge-success">Factually Sound</span>
+          <span class="badge badge-info">Recent Publication</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Scores -->
+    <div class="right-panel slide-in-right">
+      <div class="panel-header">
+        <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <h2>Overall Scores</h2>
+      </div>
+
+      <!-- Overall credibility highlight -->
+      <div class="overall-score">
+        <div class="overall-pie" style="--p:78">
+          <div class="pie-inner">
+            <span class="pie-value">78</span>
+            <span class="pie-label">%</span>
+          </div>
+        </div>
+        <h3>Overall Credibility</h3>
+        <p class="score-description">Above Average - Generally trustworthy with minor concerns</p>
+      </div>
+
+      <div class="score-divider"></div>
+
+      <h3 class="subsection-title">Detailed Breakdown</h3>
+
+      <div class="score-grid">
+        <div class="score-card score-animate" style="--delay: 0.1s">
+          <div class="pie" style="--p:65" data-score="65">
+            <div class="pie-fill"></div>
+            <span class="pie-text">65%</span>
+          </div>
+          <p class="score-label">Author Credibility</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 65%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.15s">
+          <div class="pie" style="--p:70" data-score="70">
+            <div class="pie-fill"></div>
+            <span class="pie-text">70%</span>
+          </div>
+          <p class="score-label">Evidence & Fact Check</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 70%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.2s">
+          <div class="pie" style="--p:82" data-score="82">
+            <div class="pie-fill"></div>
+            <span class="pie-text">82%</span>
+          </div>
+          <p class="score-label">Usefulness Check</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 82%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.25s">
+          <div class="pie" style="--p:55" data-score="55">
+            <div class="pie-fill"></div>
+            <span class="pie-text">55%</span>
+          </div>
+          <p class="score-label">Citation Check</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 55%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.3s">
+          <div class="pie" style="--p:60" data-score="60">
+            <div class="pie-fill"></div>
+            <span class="pie-text">60%</span>
+          </div>
+          <p class="score-label">Bias Check</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.35s">
+          <div class="pie" style="--p:68" data-score="68">
+            <div class="pie-fill"></div>
+            <span class="pie-text">68%</span>
+          </div>
+          <p class="score-label">Organization Check</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 68%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.4s">
+          <div class="pie" style="--p:75" data-score="75">
+            <div class="pie-fill"></div>
+            <span class="pie-text">75%</span>
+          </div>
+          <p class="score-label">Date & Relevancy</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 75%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button class="action-btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Export Report
+        </button>
+        <button class="action-btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+          </svg>
+          Share Analysis
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
