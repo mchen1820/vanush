@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 class UsefulQuote(BaseModel):
     quote: str = Field(..., description="A direct quote from the article that is relevant to the topic")
     suggested_use: str = Field(..., description="How the user could use this quote, e.g. 'supporting evidence', 'counterargument', 'background context'")

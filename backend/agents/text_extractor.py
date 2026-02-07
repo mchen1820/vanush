@@ -1,14 +1,3 @@
-"""
-Text extraction utility for Vanush.
-Tries multiple methods to extract article text from a URL:
-  1. Direct HTTP fetch + BeautifulSoup (fast, works on most sites)
-  2. PDF download + pypdf (for PDF links)
-  3. Returns None if all methods fail
-
-All agents should call extract_text(url) instead of relying on
-Firecrawl to scrape inside the LLM prompt.
-"""
-
 import requests
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
@@ -496,31 +485,31 @@ def extract_text_basic(url: str) -> Optional[str]:
     if "arxiv.org" in url:
         text = extract_from_arxiv(url)
         if text:
-            print(f"[text_extractor] ✅ arXiv PDF extraction succeeded ({len(text)} chars)")
+            print(f"[text_extractor] arXiv PDF extraction succeeded ({len(text)} chars)")
             return text
 
     # 2. Direct PDF link
     if is_pdf_url(url):
         text = extract_from_pdf(url)
         if text:
-            print(f"[text_extractor] ✅ PDF extraction succeeded ({len(text)} chars)")
+            print(f"[text_extractor] PDF extraction succeeded ({len(text)} chars)")
             return text
 
     # 3. HTML extraction (most common case)
     text = extract_from_html(url)
     if text:
         if has_sufficient_text(url, text):
-            print(f"[text_extractor] ✅ HTML extraction succeeded ({len(text)} chars)")
+            print(f"[text_extractor] HTML extraction succeeded ({len(text)} chars)")
             return text
 
     # 4. Last resort: try as PDF anyway (some servers don't use .pdf extension)
     text = extract_from_pdf(url)
     if text:
         if has_sufficient_text(url, text):
-            print(f"[text_extractor] ✅ Fallback PDF extraction succeeded ({len(text)} chars)")
+            print(f"[text_extractor] Fallback PDF extraction succeeded ({len(text)} chars)")
             return text
 
-    print(f"[text_extractor] ❌ All extraction methods failed for: {url}")
+    print(f"[text_extractor] All extraction methods failed for: {url}")
     return None
 
 
@@ -534,7 +523,7 @@ def extract_text(url: str) -> Optional[str]:
     if os.path.isfile(url) and url.lower().endswith(".pdf"):
         text = extract_from_local_pdf(url)
         if text:
-            print(f"[text_extractor] ✅ Local PDF extraction succeeded ({len(text)} chars)")
+            print(f"[text_extractor] Local PDF extraction succeeded ({len(text)} chars)")
             return text
 
     text = extract_text_basic(url)
@@ -543,12 +532,12 @@ def extract_text(url: str) -> Optional[str]:
 
     text = extract_from_wiley(url)
     if text:
-        print(f"[text_extractor] ✅ Wiley extraction succeeded ({len(text)} chars)")
+        print(f"[text_extractor] Wiley extraction succeeded ({len(text)} chars)")
         return text
 
     text = extract_from_springer(url)
     if text:
-        print(f"[text_extractor] ✅ Springer extraction succeeded ({len(text)} chars)")
+        print(f"[text_extractor] Springer extraction succeeded ({len(text)} chars)")
         return text
 
     fallback_urls = build_fallback_urls(url)
@@ -556,10 +545,10 @@ def extract_text(url: str) -> Optional[str]:
         print(f"[text_extractor] Trying fallback URL: {fallback_url}")
         text = extract_text_basic(fallback_url)
         if text:
-            print(f"[text_extractor] ✅ Fallback URL succeeded: {fallback_url}")
+            print(f"[text_extractor] Fallback URL succeeded: {fallback_url}")
             return text
 
-    print(f"[text_extractor] ❌ All extraction methods failed for: {url}")
+    print(f"[text_extractor] All extraction methods failed for: {url}")
     return None
 
 

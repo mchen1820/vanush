@@ -96,36 +96,3 @@ Act like its part of a grade review with your student. """,
     )
 
     return BiasCheckResult.model_validate_json(result.final_output)
-
-async def main():
-    url = input("Provide URL to analyze for bias: ")
-    client = AsyncDedalus()
-    result = await bias_check_agent(client, url)
-
-    print("\n🧭 Bias Check Results")
-    print(f"   Overall Bias Score: {result.overall_score}/100")
-    print(f"   Bias Level: {result.bias_level}")
-    print(f"   Dominant Tone: {result.dominant_tone}")
-    print(f"   Confidence: {result.confidence_score}/100")
-    print(f"\n   Summary: {result.summary}")
-
-    if result.key_indicators:
-        print("\n   Key Bias Indicators:")
-        for indicator in result.key_indicators:
-            print(f"     • {indicator}")
-
-    if result.affected_topics:
-        print("\n   Affected Topics:")
-        for topic in result.affected_topics:
-            print(f"     • {topic}")
-
-    if result.recommendations:
-        print("\n   Recommendations:")
-        for rec in result.recommendations:
-            print(f"     • {rec}")
-
-    return result
-
-if __name__ == "__main__":
-    print("Running bias_check.py")
-    asyncio.run(main())

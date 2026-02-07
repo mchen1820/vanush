@@ -6,7 +6,6 @@ from dedalus_labs import AsyncDedalus, DedalusRunner
 import os
 from dotenv import load_dotenv, find_dotenv
 
-# Variables
 load_dotenv(find_dotenv())
 dedalus_api_key = os.getenv('DEDALUS_API_KEY')
 
@@ -50,5 +49,4 @@ async def claim_agent(client, article:str) -> claim_result:
         temperature = 0.2
     )
     
-    # Parse the JSON output into your Pydantic model
     return claim_result.model_validate_json(result.final_output)

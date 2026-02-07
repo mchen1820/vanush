@@ -8,10 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
-
-
 class EvidenceResult(BaseAgentResult):
     """Result model for the Evidence Check Agent"""
     central_claim_evaluated: str = Field(..., description="The central claim being evaluated")

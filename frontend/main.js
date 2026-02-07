@@ -1,8 +1,3 @@
-// ============================================
-// INDEX PAGE - Form submission and analysis
-// ============================================
-
-// API Configuration
 const API_BASE_URL = (() => {
     if (window.CLARITY_API_BASE_URL) {
         return window.CLARITY_API_BASE_URL;
@@ -12,10 +7,6 @@ const API_BASE_URL = (() => {
     }
     return 'http://localhost:5000/api';
 })();
-
-// ============================================
-// FORM SUBMISSION & ANALYSIS
-// ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     const analyzeBtn = document.getElementById('analyze-btn');
@@ -116,10 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ============================================
-// LOADING ANIMATION
-// ============================================
-
 function showLoadingAnimation() {
     const loading = document.getElementById('loading');
     const loadingMessage = document.getElementById('loading-message');
@@ -213,10 +200,6 @@ function hideLoadingAnimation() {
     loading.style.display = 'none';
 }
 
-// ============================================
-// API CALLS
-// ============================================
-
 async function analyzeUrl(url, purpose = '') {
     const response = await fetch(`${API_BASE_URL}/analyze/url`, {
         method: 'POST',
@@ -274,10 +257,6 @@ async function analyzePdf(file, purpose = '') {
 
     return await response.json();
 }
-
-// ============================================
-// NOTIFICATION SYSTEM
-// ============================================
 
 function showNotification(message, type = 'info') {
     // Remove existing notification if any

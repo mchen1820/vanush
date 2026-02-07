@@ -1,7 +1,3 @@
-#pip install dedalus_labs, 
-#pip install dotenv and add api key to .env. add .env to gitignore
-#pip install pypdf
-
 import asyncio
 from dedalus_labs import AsyncDedalus, DedalusRunner
 import os

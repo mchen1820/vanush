@@ -1,16 +1,9 @@
-// ============================================
-// RESULTS PAGE - LOAD AND DISPLAY ANALYSIS
-// ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     loadAnalysisResults();
     initializeScoreModal();
     initializeDropdowns();
 });
-
-// ============================================
-// LOAD AND DISPLAY RESULTS
-// ============================================
 
 function loadAnalysisResults() {
     const resultsJson = sessionStorage.getItem('analysisResult');
@@ -251,10 +244,6 @@ function hideUsefulnessScore() {
     }
 }
 
-// ============================================
-// DROPDOWN MENUS
-// ============================================
-
 function initializeDropdowns() {
     const exportBtn = document.getElementById('export-btn');
     const exportMenu = document.getElementById('export-menu');
@@ -318,10 +307,6 @@ function initializeDropdowns() {
         });
     });
 }
-
-// ============================================
-// EXPORT FUNCTIONS
-// ============================================
 
 function exportAsJSON() {
     const data = sessionStorage.getItem('analysisResult');
@@ -485,10 +470,6 @@ function generatePDF(data) {
     showNotification('PDF report downloaded successfully', 'info');
 }
 
-// ============================================
-// SHARE FUNCTIONS
-// ============================================
-
 function copyLinkToClipboard() {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -525,10 +506,6 @@ function copySummaryToClipboard() {
         showNotification('Failed to copy summary', 'error');
     });
 }
-
-// ============================================
-// SCORE MODAL
-// ============================================
 
 function initializeScoreModal() {
     const modal = document.getElementById('score-modal');

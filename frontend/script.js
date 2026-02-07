@@ -1,6 +1,3 @@
-// ============================================
-// INDEX PAGE - Form submission and analysis
-// ============================================
 
 const API_BASE_URL = (() => {
     if (window.CLARITY_API_BASE_URL) {
@@ -11,10 +8,6 @@ const API_BASE_URL = (() => {
     }
     return 'http://localhost:5000/api';
 })();
-
-// ============================================
-// FORM SUBMISSION & ANALYSIS
-// ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     const analyzeBtn = document.getElementById('analyze-btn');
@@ -74,91 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// ============================================
-// MOCK DATA
-// ============================================
-
-function getMockAnalysisData(purpose = '') {
-    return {
-        metadata: {
-            title: "The Future of Artificial Intelligence",
-            author: "Jane Doe",
-            date: "January 12, 2025",
-            preview_text: "Artificial intelligence is rapidly transforming industries worldwide. Experts argue that while AI offers unprecedented efficiency, it also raises ethical concerns related to bias, transparency, and accountability..."
-        },
-        overall_credibility: 78,
-        bias_check: {
-            overall_score: 60,
-            confidence_score: 85,
-            summary: "Moderate linguistic bias detected in the article's framing and word choice. The tone shows some persuasive elements and selective emphasis favoring certain perspectives.",
-            dominant_tone: "persuasive",
-            bias_level: "Moderate Bias",
-            key_indicators: [
-                { example_text: "unprecedented efficiency", indicator_type: "emotionally loaded" },
-                { example_text: "raises ethical concerns", indicator_type: "selective emphasis" }
-            ],
-            affected_topics: ["AI development", "Workplace automation"],
-            recommendations: ["Include counterarguments", "Use more neutral language", "Present balanced perspectives"]
-        },
-        author_credibility: {
-            overall_score: 65,
-            confidence_score: 70,
-            summary: "The author demonstrates relevant expertise in the field with professional credentials and a track record of quality work. However, some academic background in the subject matter would strengthen credibility further.",
-            author_name: "Jane Doe",
-            credentials: ["Professional journalist", "5+ years in tech writing"],
-            expertise_areas: ["Technology", "AI/ML", "Innovation"],
-            concerns: ["Limited academic background in the subject"]
-        },
-        evidence_check: {
-            overall_score: 70,
-            confidence_score: 75,
-            summary: "The article presents several claims backed by research and data. Most major assertions are supported by credible sources, though some statements could benefit from additional citations.",
-            claims_analyzed: 12,
-            verified_claims: 8,
-            questionable_claims: ["AI will replace all jobs by 2030", "100% efficiency improvement"],
-            sources_quality: "Mix of peer-reviewed research and industry reports"
-        },
-        usefulness_check: {
-            overall_score: purpose ? 85 : 82,
-            confidence_score: 80,
-            summary: purpose 
-                ? `Highly relevant for your purpose: "${purpose}". The article provides practical insights and current information that directly applies to your needs.`
-                : "Article provides practical insights for professionals and general readers interested in AI development.",
-            target_audience: "Tech professionals, business leaders, general audience",
-            practical_value: "High - provides actionable insights and current trends",
-            actionability: "Moderate - concepts discussed can inform decision-making"
-        },
-        citation_check: {
-            overall_score: 55,
-            confidence_score: 65,
-            summary: "The article includes citations from a mix of academic and industry sources. While key claims are referenced, some important assertions lack proper citations.",
-            total_citations: 8,
-            citation_quality: "Mix of academic and industry sources",
-            missing_citations: ["Statistical claim about job displacement", "Expert opinion attribution"]
-        },
-        organization_check: {
-            overall_score: 68,
-            confidence_score: 85,
-            summary: "The article follows a logical structure with clear introduction, body, and conclusion. Information flows well between sections, though some transitions could be smoother.",
-            structure_quality: "Well-organized with clear sections",
-            strengths: ["Clear introduction", "Logical progression", "Strong conclusion"],
-            weaknesses: ["Some sections too brief", "Could use more subheadings"]
-        },
-        relevancy_check: {
-            overall_score: 75,
-            confidence_score: 90,
-            summary: "Published recently with current information on the topic. The content addresses ongoing developments and contemporary issues in the field.",
-            publication_date: "January 12, 2025",
-            is_current: true,
-            relevancy_notes: "Content is timely and addresses ongoing developments in the field"
-        }
-    };
-}
-
-// ============================================
-// LOADING ANIMATION
-// ============================================
 
 function showLoadingAnimation() {
     const loading = document.getElementById('loading');
@@ -247,10 +155,6 @@ function hideLoadingAnimation() {
     loading.style.display = 'none';
 }
 
-// ============================================
-// API CALLS
-// ============================================
-
 async function analyzeUrl(url, purpose = '') {
     const response = await fetch(`${API_BASE_URL}/analyze/url`, {
         method: 'POST',
@@ -304,10 +208,6 @@ async function analyzePdf(file, purpose = '') {
 
     return await response.json();
 }
-
-// ============================================
-// NOTIFICATION SYSTEM
-// ============================================
 
 function showNotification(message, type = 'info') {
     const existingNotif = document.querySelector('.notification');
@@ -408,10 +308,6 @@ if (!document.querySelector('#notification-styles')) {
     `;
     document.head.appendChild(style);
 }
-
-// ============================================
-// SHARED UTILITIES
-// ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     

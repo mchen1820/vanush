@@ -12,11 +12,9 @@ from author_org_check import author_check_agent, AuthorResult
 from evidence_check import evidence_check_agent, EvidenceResult
 from usefullness_check import usefulness_check_agent, UsefulnessResult
 
-# Variables
 load_dotenv(find_dotenv())
 dedalus_api_key = os.getenv('DEDALUS_API_KEY')
 
-# New synthesis result class
 class ManagerSynthesisResult(BaseAgentResult):
     """Manager's final synthesis of all agent results"""
     overall_credibility_score: int = Field(..., description="Overall credibility 0-100")
@@ -46,33 +44,33 @@ async def manager_synthesis_agent(
 
 Your team has completed the following analyses. Review them carefully and provide a final synthesis:
 
-📰 CLAIM ANALYSIS:
+CLAIM ANALYSIS:
 Summary: {claim_res.summary}
 Central Claim: {claim_res.central_claim}
 Confidence Score: {claim_res.confidence_score}/100
 Overall Score: {claim_res.overall_score}/100
 
-📚 CITATION ANALYSIS:
+CITATION ANALYSIS:
 Summary: {citation_res.summary}
 Confidence Score: {citation_res.confidence_score}/100
 Overall Score: {citation_res.overall_score}/100
 
-⚖️ BIAS ANALYSIS:
+BIAS ANALYSIS:
 Summary: {bias_res.summary}
 Confidence Score: {bias_res.confidence_score}/100
 Overall Score: {bias_res.overall_score}/100
 
-👤 AUTHOR/ORGANIZATION ANALYSIS:
+AUTHOR/ORGANIZATION ANALYSIS:
 Summary: {author_res.summary}
 Confidence Score: {author_res.confidence_score}/100
 Overall Score: {author_res.overall_score}/100
 
-🔍 EVIDENCE ANALYSIS:
+EVIDENCE ANALYSIS:
 Summary: {ev_res.summary}
 Confidence Score: {ev_res.confidence_score}/100
 Overall Score: {ev_res.overall_score}/100
 
-💡 USEFULNESS ANALYSIS:
+USEFULNESS ANALYSIS:
 Summary: {usefulness_res.summary}
 Confidence Score: {usefulness_res.confidence_score}/100
 Overall Score: {usefulness_res.overall_score}/100
@@ -121,14 +119,14 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
 
     
     # Phase 2: Run dependent agents
-    print("\n🔍 Phase 2: Running dependent analysis...")
+    print("\nPhase 2: Running dependent analysis...")
     ev_res, usefulness_res = await asyncio.gather(
         evidence_check_agent(client, input_text, central_claim),
         usefulness_check_agent(client, input_text, topic)
     )
     
     # Phase 3: Manager synthesizes all results
-    print("\n🧠 Phase 3: Manager synthesizing results...")
+    print("\nPhase 3: Manager synthesizing results...")
     synthesis = await manager_synthesis_agent(
         client,
         input_text,
@@ -139,7 +137,7 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
         ev_res,
         usefulness_res
     )
-    print("✅ Phase 3 complete")
+    print("Phase 3 complete")
     
     return {
         "claim": claim_res,
@@ -170,55 +168,53 @@ async def main():
     
     # Print individual agent results
     print("\n" + "="*60)
-    print("📋 DETAILED AGENT RESULTS")
+    print("DETAILED AGENT RESULTS")
     print("="*60)
     
-    print(f"\n📰 Central Claim: {results['claim'].central_claim}")
+    print(f"\nCentral Claim: {results['claim'].central_claim}")
     print(f"   Summary: {results['claim'].summary}")
     
-    print(f"\n📚 Citation Analysis: {results['citations'].summary}")
+    print(f"\nCitation Analysis: {results['citations'].summary}")
     print(f"   Score: {results['citations'].overall_score}/100")
     
-    print(f"\n⚖️  Bias Analysis: {results['bias'].summary}")
+    print(f"\nBias Analysis: {results['bias'].summary}")
     print(f"   Score: {results['bias'].overall_score}/100")
     
-    print(f"\n👤 Author/Org Analysis: {results['author'].summary}")
+    print(f"\nAuthor/Org Analysis: {results['author'].summary}")
     print(f"   Score: {results['author'].overall_score}/100")
     
-    print(f"\n🔍 Evidence Analysis: {results['evidence'].summary}")
+    print(f"\nEvidence Analysis: {results['evidence'].summary}")
     print(f"   Score: {results['evidence'].overall_score}/100")
     
-    print(f"\n💡 Usefulness Analysis: {results['usefulness'].summary}")
+    print(f"\nUsefulness Analysis: {results['usefulness'].summary}")
     print(f"   Score: {results['usefulness'].overall_score}/100")
     
-    
-    # Print Manager's Synthesis (THE MAIN OUTPUT)
     synthesis = results['synthesis']
     print("\n" + "="*60)
-    print("🎯 MANAGER'S FINAL SYNTHESIS")
+    print("MANAGER'S FINAL SYNTHESIS")
     print("="*60)
     
-    print(f"\n📊 Overall Credibility Score: {synthesis.overall_credibility_score}/100")
+    print(f"\nOverall Credibility Score: {synthesis.overall_credibility_score}/100")
     print(f"   Recommendation: {synthesis.recommendation}")
     
-    print(f"\n📝 Final Verdict:")
+    print(f"\nFinal Verdict:")
     print(f"   {synthesis.final_verdict}")
     
-    print(f"\n🔑 Key Findings:")
+    print(f"\nKey Findings:")
     for i, finding in enumerate(synthesis.key_findings, 1):
         print(f"   {i}. {finding}")
     
     if synthesis.red_flags:
-        print(f"\n🚩 Red Flags:")
+        print(f"\nRed Flags:")
         for i, flag in enumerate(synthesis.red_flags, 1):
             print(f"   {i}. {flag}")
     
     if synthesis.strengths:
-        print(f"\n✅ Strengths:")
+        print(f"\nStrengths:")
         for i, strength in enumerate(synthesis.strengths, 1):
             print(f"   {i}. {strength}")
     
-    print(f"\n📄 Executive Summary:")
+    print(f"\nExecutive Summary:")
     print(f"   {synthesis.summary}")
     
     return results
