@@ -10,6 +10,7 @@ from bias import bias_check_agent, BiasCheckResult
 from citation_check import citation_check_agent, CitationResult
 from author_org_check import author_check_agent, AuthorResult
 from evidence_check import evidence_check_agent, EvidenceResult
+from date_check import date_check_agent, DateResult
 from usefullness_check import usefulness_check_agent, UsefulnessResult
 
 load_dotenv(find_dotenv())
@@ -33,6 +34,7 @@ async def manager_synthesis_agent(
     author_res: AuthorResult,
     ev_res: EvidenceResult,
     usefulness_res: UsefulnessResult,
+    date_res: DateResult
 ) -> ManagerSynthesisResult:
     """
     Manager agent that reviews all sub-agent outputs and creates a synthesis
@@ -75,6 +77,11 @@ Summary: {usefulness_res.summary}
 Confidence Score: {usefulness_res.confidence_score}/100
 Overall Score: {usefulness_res.overall_score}/100
 
+DATE ANALYSIS:
+Summary: {date_res.summary}
+Confidence Score: {date_res.confidence_score}/100
+Overall Score: {date_res.overall_score}/100
+
 ---
 
 Based on ALL these analyses, provide your final synthesis:
@@ -111,10 +118,11 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
     claim_res = await claim_agent(client, input_text)
     central_claim = claim_res.central_claim
 
-    citation_res, bias_res, author_res = await asyncio.gather(
+    citation_res, bias_res, author_res, date_res = await asyncio.gather(
         citation_check_agent(client, input_text),
         bias_check_agent(client,input_text, ),
         author_check_agent(client, input_text),
+        date_check_agent(client, input_text)
     )
 
     
@@ -135,7 +143,8 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
         bias_res,
         author_res,
         ev_res,
-        usefulness_res
+        usefulness_res,
+        date_res
     )
     print("Phase 3 complete")
     
@@ -146,6 +155,7 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
         "author": author_res,
         "evidence": ev_res,
         "usefulness": usefulness_res,
+        "date": date_res,
         "synthesis": synthesis  # Manager's final output
     }
 
