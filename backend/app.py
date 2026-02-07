@@ -1,4 +1,5 @@
 import asyncio
+import io
 import os
 import re
 import sys
@@ -10,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
+from pypdf import PdfReader
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -89,6 +91,65 @@ def parse_date_to_human(date_value: str | None) -> str | None:
                 continue
 
     return date_value
+
+
+def parse_pdf_doc_date(raw_value: str | None) -> str | None:
+    """
+    Parse PDF metadata date format like D:20160315055936-07'00'.
+    Returns a human date string when possible.
+    """
+    if not raw_value:
+        return None
+
+    match = re.search(r"D:(\d{4})(\d{2})?(\d{2})?", raw_value)
+    if not match:
+        return None
+
+    year = match.group(1)
+    month = match.group(2) or "01"
+    day = match.group(3) or "01"
+    try:
+        return datetime(int(year), int(month), int(day)).strftime("%B %d, %Y")
+    except ValueError:
+        return year
+
+
+def extract_pdf_metadata_from_bytes(pdf_bytes: bytes) -> dict:
+    """
+    Extract title/author/date from PDF metadata.
+    This is especially useful when first-page text contains publisher boilerplate.
+    """
+    try:
+        reader = PdfReader(io.BytesIO(pdf_bytes))
+        meta = reader.metadata or {}
+    except Exception:
+        return {}
+
+    raw_title = meta.get("/Title") or meta.get("Title")
+    title = normalize_title(raw_title)
+    if title and re.search(r"terms\s*&?\s*conditions|download by", title, flags=re.IGNORECASE):
+        title = None
+
+    raw_author = meta.get("/Author") or meta.get("Author")
+    authors = []
+    if raw_author:
+        cleaned_author = re.sub(r"\s+", " ", str(raw_author)).strip()
+        if cleaned_author and len(cleaned_author.split()) >= 2:
+            authors = [cleaned_author]
+
+    raw_date = (
+        meta.get("/ModDate")
+        or meta.get("ModDate")
+        or meta.get("/CreationDate")
+        or meta.get("CreationDate")
+    )
+    date_value = parse_pdf_doc_date(str(raw_date)) if raw_date else None
+
+    return {
+        "title": title,
+        "authors": authors,
+        "date": date_value,
+    }
 
 
 def normalize_source_excerpt(text: str | None, max_len: int = 700) -> str | None:
@@ -294,30 +355,103 @@ def fetch_source_metadata(url: str) -> dict:
     }
 
 
+def is_non_title_line(line: str) -> bool:
+    """Identify common publisher header/footer lines that should not be used as title."""
+    lower = line.lower()
+    bad_patterns = [
+        "full terms",
+        "conditions of access",
+        "download by",
+        "journal homepage",
+        "issn:",
+        "to cite this article",
+        "to link to this article",
+        "published online:",
+        "submit your article",
+        "view related articles",
+        "view crossmark data",
+        "doi:",
+        "http://",
+        "https://",
+    ]
+    if any(pattern in lower for pattern in bad_patterns):
+        return True
+    if len(line.split()) < 3:
+        return True
+    if sum(ch.isalpha() for ch in line) < 12:
+        return True
+    return False
+
+
+def score_title_candidate(candidate: str) -> float:
+    """Heuristic scoring for likely article titles."""
+    text = re.sub(r"\s+", " ", candidate).strip()
+    words = text.split()
+    if not words:
+        return -999.0
+
+    score = 0.0
+    word_count = len(words)
+    length = len(text)
+    alpha_ratio = sum(ch.isalpha() for ch in text) / max(1, length)
+
+    if 6 <= word_count <= 20:
+        score += 3.0
+    elif 4 <= word_count <= 28:
+        score += 1.5
+    else:
+        score -= 1.5
+
+    if 40 <= length <= 180:
+        score += 2.0
+    elif length < 20 or length > 220:
+        score -= 2.0
+
+    if alpha_ratio >= 0.65:
+        score += 1.0
+
+    lower = text.lower()
+    if "journal of" in lower and word_count <= 8:
+        score -= 1.5
+    if any(token in lower for token in ["terms", "conditions", "issn", "doi", "download by"]):
+        score -= 4.0
+    if re.search(r"[.!?]\s*$", text):
+        score -= 0.5
+
+    return score
+
+
 def guess_title_from_text(article_text: str) -> str:
-    lines = [line.strip() for line in article_text.splitlines() if line.strip()]
+    lines = [re.sub(r"\s+", " ", line).strip() for line in article_text.splitlines() if line.strip()]
     if not lines:
         return "Article"
 
-    first = lines[0]
-    first = re.sub(r"^(REVIEW|ARTICLE|ABSTRACT)\s+", "", first, flags=re.IGNORECASE)
-    first = re.sub(r"\s+Received:.*$", "", first, flags=re.IGNORECASE)
-    first = re.sub(r"\s+Accepted:.*$", "", first, flags=re.IGNORECASE)
-    first = re.sub(r"\s+Published online:.*$", "", first, flags=re.IGNORECASE)
-    first = re.sub(r"\s+©.*$", "", first)
-    first = re.sub(r"\s+/C\d+.*$", "", first, flags=re.IGNORECASE)
+    candidates: list[str] = []
+    max_lines = min(80, len(lines))
+    for i in range(max_lines):
+        line = lines[i]
+        if is_non_title_line(line):
+            continue
 
-    # Springer/PDF extraction often appends author names to title on one line.
-    if "•" in first:
-        first = first.split("•", 1)[0].strip()
-    first = re.sub(
-        r"\s+[A-Z][A-Za-z'´’.-]+\s+[A-Z][A-Za-z'´’.-]+\s*\d{0,2}$",
-        "",
-        first,
-    )
+        single = normalize_title(line) or line
+        if single and single not in candidates:
+            candidates.append(single)
 
-    first = re.sub(r"\s+", " ", first).strip()
-    return first[:180] if first else "Article"
+        # Join a following line for wrapped titles.
+        if i + 1 < max_lines and not is_non_title_line(lines[i + 1]):
+            joined = f"{line} {lines[i + 1]}".strip()
+            joined = re.sub(r"\s+", " ", joined)
+            if len(joined) <= 220:
+                normalized = normalize_title(joined) or joined
+                if normalized not in candidates:
+                    candidates.append(normalized)
+
+    if not candidates:
+        fallback = re.sub(r"\s+", " ", lines[0]).strip()
+        return fallback[:180] if fallback else "Article"
+
+    best = max(candidates, key=score_title_candidate)
+    return best[:180]
 
 
 def build_relevancy_check(date_result: dict, citation_result: dict) -> dict:
@@ -398,14 +532,34 @@ def build_organization_check(author_result: dict) -> dict:
     }
 
 
-def build_metadata(source: str, article_text: str, claim_result: dict, author_result: dict, date_result: dict) -> dict:
+def build_metadata(
+    source: str,
+    article_text: str,
+    claim_result: dict,
+    author_result: dict,
+    date_result: dict,
+    source_meta_override: dict | None = None,
+) -> dict:
     source_meta = fetch_source_metadata(source) if source.startswith("http") else {}
+    if source_meta_override:
+        source_meta.update({k: v for k, v in source_meta_override.items() if v})
+
     title_guess = source_meta.get("title") or guess_title_from_text(article_text)
     parsed = urlparse(source) if source.startswith("http") else None
     source_host = parsed.netloc if parsed and parsed.netloc else "Direct input"
 
-    author_from_source = ", ".join(source_meta.get("authors") or [])
-    author_value = author_from_source or author_result.get("author_name") or "Unknown"
+    source_authors = source_meta.get("authors") or []
+    if len(source_authors) >= 2:
+        author_from_source = ", ".join(source_authors)
+    else:
+        author_from_source = ""
+
+    author_value = (
+        author_from_source
+        or author_result.get("author_name")
+        or (source_authors[0] if source_authors else "Unknown")
+    )
+
     date_value = (date_result.get("date") or "").strip() if date_result else ""
     if not date_value:
         date_value = source_meta.get("date") or "No publication date found"
@@ -422,7 +576,12 @@ def build_metadata(source: str, article_text: str, claim_result: dict, author_re
     }
 
 
-def format_results(results: dict, source: str, article_text: str) -> dict:
+def format_results(
+    results: dict,
+    source: str,
+    article_text: str,
+    source_meta_override: dict | None = None,
+) -> dict:
     claim = results["claim"].model_dump()
     citations = results["citations"].model_dump()
     bias = results["bias"].model_dump()
@@ -436,7 +595,7 @@ def format_results(results: dict, source: str, article_text: str) -> dict:
     overall_credibility = round(clamp_score(synthesis.get("overall_credibility_score"), 0.0))
 
     return {
-        "metadata": build_metadata(source, article_text, claim, author, date),
+        "metadata": build_metadata(source, article_text, claim, author, date, source_meta_override=source_meta_override),
         "overall_credibility": overall_credibility,
         "bias_check": bias,
         "author_credibility": author,
@@ -542,13 +701,21 @@ def analyze_pdf():
     if not file_bytes:
         return json_error("Uploaded file is empty.", 400)
 
+    pdf_meta = extract_pdf_metadata_from_bytes(file_bytes)
     article_text = extract_pdf_bytes(file_bytes, url=upload.filename or "uploaded.pdf")
     if not article_text:
         return json_error("Could not extract readable text from the PDF.", 422)
 
     try:
         results = asyncio.run(run_pipeline(article_text, topic))
-        return jsonify(format_results(results, source=upload.filename or "uploaded.pdf", article_text=article_text))
+        return jsonify(
+            format_results(
+                results,
+                source=upload.filename or "uploaded.pdf",
+                article_text=article_text,
+                source_meta_override=pdf_meta,
+            )
+        )
     except Exception as exc:
         return json_error(f"Analysis failed: {exc}", 500)
 
