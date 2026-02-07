@@ -38,12 +38,14 @@ class AuthorResult(BaseAgentResult):
     recommendations: List[str] = Field(default_factory=list)
 
 
-async def author_check_agent(client: AsyncDedalus, article:str) -> AuthorResult:
+async def author_check_agent(client: AsyncDedalus, article:str, central_claim, topic) -> AuthorResult:
 	runner = DedalusRunner(client)
 	result = await runner.run(
     input=f""" 
         The article can be found in:
         "{article}"
+
+
         
         Perform a thorough author credibility analysis:
         1. Identify the author(s) of the article.
@@ -57,7 +59,9 @@ async def author_check_agent(client: AsyncDedalus, article:str) -> AuthorResult:
         9. Provide recommendations for reliable articles with similar topics
         10. Compute an overall author/organization score from 0 to 100.
         
-        **IMPORTANT**: Use  given mcp server to find 2-3 highly related articles. 
+        **IMPORTANT**: Use  "tsion/exa to find 3 highly related articles to {central_claim}
+		and {topic}
+
         Store the complete URLs in the 'related_links' field. CHECK TO ENSURE THAT You are not returning 
 		links for the same article. DO NOT return links to sources that are by the same author.
 		
@@ -66,7 +70,7 @@ async def author_check_agent(client: AsyncDedalus, article:str) -> AuthorResult:
         """,
     model="openai/gpt-4o",
     response_format=AuthorResult,
-	mcp_servers=["tsion/exa"],  # Privacy-focused web search]
+	mcp_servers=["tsion/exa", ],  # Privacy-focused web search]
     temperature=0.2
 )
 		

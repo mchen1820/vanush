@@ -73,8 +73,8 @@ async def main():
     print(f"\nDate and Relevance Analysis: {results['date'].summary}")
     print(f" Relevance: {results['date'].relevance}")
     print(f" Score: {results['date'].overall_score}")
-
     
+
     
     synthesis = results['synthesis']
     print("\n" + "="*60)

@@ -118,19 +118,19 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
     claim_res = await claim_agent(client, input_text)
     central_claim = claim_res.central_claim
 
-    citation_res, bias_res, author_res = await asyncio.gather(
+    citation_res, bias_res, date_res = await asyncio.gather(
         citation_check_agent(client, input_text),
-        bias_check_agent(client,input_text, ),
-        author_check_agent(client, input_text)
+        bias_check_agent(client,input_text),
+        date_check_agent(client, input_text, topic)
     )
 
     
     # Phase 2: Run dependent agents
     print("\n🔍 Phase 2: Running dependent analysis...")
-    ev_res, usefulness_res, date_res = await asyncio.gather(
+    ev_res, usefulness_res, author_res = await asyncio.gather(
         evidence_check_agent(client, input_text, central_claim),
         usefulness_check_agent(client, input_text, topic),
-        date_check_agent(client, input_text, topic)
+        author_check_agent(client, input_text, central_claim, topic),
     )
     
     # Phase 3: Manager synthesizes all results
