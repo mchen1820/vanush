@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis Results - Article Credibility Analyzer</title>
+  <title>Analysis Results - Clarity</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Animated background elements -->
+
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
   </div>
 
-  <!-- Back button -->
   <a href="index.html" class="back-btn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
@@ -24,7 +23,6 @@
 
   <div class="results-container">
     
-    <!-- LEFT: Article Preview -->
     <div class="left-panel slide-in-left">
       <div class="panel-header">
         <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,18 +55,22 @@
         </p>
       </div>
 
+      <div class="central-claim">
+        <h3 class="section-title">Central Claim</h3>
+        <p>
+          AI development will lead to net positive outcomes for society, with economic benefits outweighing potential risks if proper governance frameworks are implemented.
+        </p>
+      </div>
+
       <div class="summary">
-        <h3 class="section-title">Overall Summary</h3>
+        <h3 class="section-title">Article Summary</h3>
         <div class="summary-content">
           <p>
-            This article presents an optimistic view of AI development, emphasizing
-            benefits while downplaying potential risks. The tone is persuasive and
-            selectively highlights expert opinions aligned with the author's stance.
+            The article explores the current state and future trajectory of artificial intelligence across various industries. It examines both the transformative potential of AI technologies and the ethical challenges they present, ultimately arguing for a balanced approach to AI development that prioritizes responsible innovation.
           </p>
         </div>
       </div>
 
-      <!-- Key findings badges -->
       <div class="findings">
         <h3 class="section-title">Key Findings</h3>
         <div class="badges">
@@ -79,7 +81,6 @@
       </div>
     </div>
 
-    <!-- RIGHT: Scores -->
     <div class="right-panel slide-in-right">
       <div class="panel-header">
         <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -88,7 +89,6 @@
         <h2>Overall Scores</h2>
       </div>
 
-      <!-- Overall credibility highlight -->
       <div class="overall-score">
         <div class="overall-pie" style="--p:78">
           <div class="pie-inner">
@@ -96,112 +96,201 @@
             <span class="pie-label">%</span>
           </div>
         </div>
-        <h3>Overall Credibility</h3>
+        <h3>Overall Credibility Score</h3>
         <p class="score-description">Above Average - Generally trustworthy with minor concerns</p>
       </div>
 
       <div class="score-divider"></div>
 
       <h3 class="subsection-title">Detailed Breakdown</h3>
+      <p class="subsection-hint">Click any score for detailed explanation</p>
 
       <div class="score-grid">
-        <div class="score-card score-animate" style="--delay: 0.1s">
-          <div class="pie" style="--p:65" data-score="65">
-            <div class="pie-fill"></div>
-            <span class="pie-text">65%</span>
-          </div>
-          <p class="score-label">Author Credibility</p>
-          <div class="score-bar">
-            <div class="score-bar-fill" style="width: 65%"></div>
-          </div>
-        </div>
 
-        <div class="score-card score-animate" style="--delay: 0.15s">
+        <div class="score-card score-animate" style="--delay: 0.1s"
+             data-score-type="Evidence & Fact Check"
+             data-explanation="The article presents multiple claims supported by research and data. Most major assertions are backed by credible sources, though a few statements could benefit from additional citations. Statistical claims appear accurate and verifiable.">
           <div class="pie" style="--p:70" data-score="70">
             <div class="pie-fill"></div>
             <span class="pie-text">70%</span>
           </div>
-          <p class="score-label">Evidence & Fact Check</p>
+          <p class="score-label">Evidence Quality Score</p>
           <div class="score-bar">
             <div class="score-bar-fill" style="width: 70%"></div>
           </div>
         </div>
 
-        <div class="score-card score-animate" style="--delay: 0.2s">
-          <div class="pie" style="--p:82" data-score="82">
-            <div class="pie-fill"></div>
-            <span class="pie-text">82%</span>
-          </div>
-          <p class="score-label">Usefulness Check</p>
-          <div class="score-bar">
-            <div class="score-bar-fill" style="width: 82%"></div>
-          </div>
-        </div>
-
-        <div class="score-card score-animate" style="--delay: 0.25s">
-          <div class="pie" style="--p:55" data-score="55">
-            <div class="pie-fill"></div>
-            <span class="pie-text">55%</span>
-          </div>
-          <p class="score-label">Citation Check</p>
-          <div class="score-bar">
-            <div class="score-bar-fill" style="width: 55%"></div>
-          </div>
-        </div>
-
-        <div class="score-card score-animate" style="--delay: 0.3s">
+        <div class="score-card score-animate" style="--delay: 0.15s"
+             data-score-type="Bias Check"
+             data-explanation="Moderate linguistic bias detected in the article's framing and word choice. The tone shows some persuasive elements and selective emphasis favoring certain perspectives. While not heavily biased, readers should be aware of the author's positioning and seek alternative viewpoints.">
           <div class="pie" style="--p:60" data-score="60">
             <div class="pie-fill"></div>
             <span class="pie-text">60%</span>
           </div>
-          <p class="score-label">Bias Check</p>
+          <p class="score-label">Bias & Framing Score</p>
           <div class="score-bar">
             <div class="score-bar-fill" style="width: 60%"></div>
           </div>
         </div>
 
-        <div class="score-card score-animate" style="--delay: 0.35s">
+        <div class="score-card score-animate" style="--delay: 0.2s"
+             data-score-type="Date & Relevancy"
+             data-explanation="Published recently with current information on the topic. The content addresses ongoing developments and contemporary issues in the field. Information appears up-to-date and relevant to present-day discussions.">
+          <div class="pie" style="--p:75" data-score="75">
+            <div class="pie-fill"></div>
+            <span class="pie-text">75%</span>
+          </div>
+          <p class="score-label">Date & Relevancy Score</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 75%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.25s"
+             data-score-type="Citation Check"
+             data-explanation="The article includes citations from a mix of academic and industry sources. While key claims are referenced, some important assertions lack proper citations. Source quality is generally good but could be more comprehensive for a stronger foundation.">
+          <div class="pie" style="--p:55" data-score="55">
+            <div class="pie-fill"></div>
+            <span class="pie-text">55%</span>
+          </div>
+          <p class="score-label">Citation Validity Score</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 55%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.3s" 
+             data-score-type="Author Credibility"
+             data-explanation="The author demonstrates relevant expertise in the field with professional credentials and a track record of quality work. However, some academic background in the subject matter would strengthen credibility further.">
+          <div class="pie" style="--p:65" data-score="65">
+            <div class="pie-fill"></div>
+            <span class="pie-text">65%</span>
+          </div>
+          <p class="score-label">Author Credibility Score</p>
+          <div class="score-bar">
+            <div class="score-bar-fill" style="width: 65%"></div>
+          </div>
+        </div>
+
+        <div class="score-card score-animate" style="--delay: 0.35s"
+             data-score-type="Organization Check"
+             data-explanation="The article follows a logical structure with clear introduction, body, and conclusion. Information flows well between sections, though some transitions could be smoother. Subheadings help navigation but could be more descriptive in places.">
           <div class="pie" style="--p:68" data-score="68">
             <div class="pie-fill"></div>
             <span class="pie-text">68%</span>
           </div>
-          <p class="score-label">Organization Check</p>
+          <p class="score-label">Publisher Credibility Score</p>
           <div class="score-bar">
             <div class="score-bar-fill" style="width: 68%"></div>
           </div>
         </div>
 
-        <div class="score-card score-animate" style="--delay: 0.4s">
-          <div class="pie" style="--p:75" data-score="75">
+        <div class="score-card score-animate" style="--delay: 0.4s"
+             data-score-type="Usefulness Check"
+             data-explanation="This article provides valuable insights for both professionals and general readers. The content offers actionable information and practical perspectives that can inform decision-making. Strong relevance to current discussions in the field.">
+          <div class="pie" style="--p:82" data-score="82">
             <div class="pie-fill"></div>
-            <span class="pie-text">75%</span>
+            <span class="pie-text">82%</span>
           </div>
-          <p class="score-label">Date & Relevancy</p>
+          <p class="score-label">Usefulness Score</p>
           <div class="score-bar">
-            <div class="score-bar-fill" style="width: 75%"></div>
+            <div class="score-bar-fill" style="width: 82%"></div>
           </div>
         </div>
+
       </div>
 
-      <!-- Action buttons -->
       <div class="action-buttons">
-        <button class="action-btn btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          Export Report
-        </button>
-        <button class="action-btn btn-secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-          </svg>
-          Share Analysis
-        </button>
+        <div class="action-btn-group">
+          <button class="action-btn btn-primary" id="export-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Export Report
+          </button>
+          <div class="dropdown-menu" id="export-menu">
+            <button class="dropdown-item" data-format="pdf">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              Export as PDF
+            </button>
+            <button class="dropdown-item" data-format="json">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Export as JSON
+            </button>
+            <button class="dropdown-item" data-format="txt">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Export as Text
+            </button>
+          </div>
+        </div>
+
+        <div class="action-btn-group">
+          <button class="action-btn btn-secondary" id="share-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Share Analysis
+          </button>
+          <div class="dropdown-menu" id="share-menu">
+            <button class="dropdown-item" data-share="link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+              Copy Link
+            </button>
+            <button class="dropdown-item" data-share="email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Share via Email
+            </button>
+            <button class="dropdown-item" data-share="twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+              </svg>
+              Share on Twitter
+            </button>
+            <button class="dropdown-item" data-share="clipboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+              </svg>
+              Copy Summary
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
 
+  <div id="score-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close modal">&times;</button>
+      <div class="modal-header">
+        <h3 id="modal-title">Score Breakdown</h3>
+      </div>
+      <div class="modal-body">
+        <div class="modal-score">
+          <div class="modal-pie" id="modal-pie" style="--p:0">
+            <div class="modal-pie-inner">
+              <span class="modal-pie-value" id="modal-score-value">0</span>
+              <span class="modal-pie-label">%</span>
+            </div>
+          </div>
+        </div>
+        <p id="modal-explanation" class="modal-explanation"></p>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script src="results.js"></script>
 </body>
 </html>
