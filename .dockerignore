@@ -1,0 +1,11 @@
+.git
+.gitignore
+.venv
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.env
+frontend/node_modules

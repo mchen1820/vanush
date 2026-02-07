@@ -1,0 +1,13 @@
+services:
+  vanush:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vanush-app
+    ports:
+      - "5001:5001"
+    environment:
+      DEDALUS_API_KEY: ${DEDALUS_API_KEY}
+      PORT: 5001
+      FLASK_DEBUG: 0
+    restart: unless-stopped

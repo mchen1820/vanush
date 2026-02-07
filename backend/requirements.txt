@@ -1,0 +1,7 @@
+Flask==2.2.3
+Werkzeug==2.2.3
+requests==2.32.3
+beautifulsoup4==4.13.3
+pypdf==6.6.2
+python-dotenv==1.2.1
+dedalus-labs==0.2.0
