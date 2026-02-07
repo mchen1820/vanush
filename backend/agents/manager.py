@@ -120,7 +120,6 @@ async def manager_agent(client:str, input_text: str, topic: str) -> Dict[str, Ba
     )
 
     
-    # Phase 2: Run dependent agents
     print("\n🔍 Phase 2: Running dependent analysis...")
     ev_res, usefulness_res = await asyncio.gather(
         evidence_check_agent(client, input_text, central_claim),
