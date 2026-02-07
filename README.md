@@ -1,6 +1,6 @@
-# vanush
+# Clarity
 
-Credibility analyzer with:
+Clarity is an article credibility analyzer with:
 - Flask backend API (`/api/analyze/url`, `/api/analyze/text`, `/api/analyze/pdf`)
 - Static frontend served by Flask
 
@@ -12,10 +12,10 @@ Credibility analyzer with:
 export DEDALUS_API_KEY="your_key_here"
 ```
 
-2. Build and run:
+2. Build and run (from the project root):
 
 ```bash
-cd /Users/colbylin/Documents/GitHub/vanush
+cd <path-to-clarity>
 docker compose up --build
 ```
 
@@ -54,7 +54,7 @@ Expect `{"status":"ok","dedalus_api_key_loaded":true}`.
 ## Run without Docker
 
 ```bash
-cd /Users/colbylin/Documents/GitHub/vanush/backend
+cd <path-to-clarity>/backend
 PORT=5001 python3 app.py
 ```
 
