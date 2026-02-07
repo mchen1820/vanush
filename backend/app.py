@@ -431,6 +431,7 @@ def format_results(results: dict, source: str, article_text: str) -> dict:
     usefulness = results["usefulness"].model_dump()
     date = results["date"].model_dump() if "date" in results else {}
     synthesis = results["synthesis"].model_dump()
+    related_links = results['author'].model_dump()
 
     overall_credibility = round(clamp_score(synthesis.get("overall_credibility_score"), 0.0))
 
@@ -445,6 +446,7 @@ def format_results(results: dict, source: str, article_text: str) -> dict:
         "organization_check": build_organization_check(author),
         "relevancy_check": build_relevancy_check(date, citations),
         "synthesis": synthesis,
+        "related_links": related_links,
     }
 
 
