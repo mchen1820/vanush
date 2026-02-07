@@ -66,6 +66,7 @@ async def main():
     
     print(f"\nUsefulness Analysis: {results['usefulness'].summary}")
     print(f"   Score: {results['usefulness'].overall_score}/100")
+
     
     synthesis = results['synthesis']
     print("\n" + "="*60)

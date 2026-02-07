@@ -66,7 +66,9 @@ async def author_check_agent(client: AsyncDedalus, article:str) -> AuthorResult:
 			increase with higher number of articles.
 
 		Also, importantly, use the brave-search mcp to find 2-3 highly related articles to the given one. 
-		Search the web for this and store the links related links. Searching for articles by the same author is a plus. 
+		Search the web for this and store the links related links. Searching for articles by the same author is a plus.
+		
+		 
 		In your summary, act like you are a professor reviewing this article for author credibility.
 		Act like its part of a grade review with your student. """,
 
@@ -104,7 +106,7 @@ async def main():
 
 	if result.related_links:
 		print(f" related_links:{result.related_links} ")
-		
+
 	print(f"   Total Articles Found: {result.total_articles_found}")
 
 	if result.reliability_score_estimate is not None:
