@@ -14,70 +14,61 @@ class AuthorType(BaseModel):
     count: int
 
 class AuthorResult(BaseAgentResult):
-	author_name: Optional[str] = Field(None)
-	organization: Optional[str] = Field(None)
-	related_links : List[str]
-    
-	total_articles_found: int = Field(...)
-	publication_types: List[AuthorType] = Field(
-		default_factory=list,
-		description="Breakdown of publication types and counts"
-	)
-
-	notable_publications: List[str] = Field(default_factory=list)
-	expertise_alignment_score: int = Field(
-		None, description="Estimated score on a 0-100 scale of how well the author's background matches the article topic"
-	)
-    
-	reliability_score_estimate: Optional[int] = Field(
-		None, description="Estimated reliability on a 0-100 scale"
-	)
-	bias_indicators: List[str] = Field(default_factory=list)
-
-	recommendations: List[str] = Field(default_factory=list)
+    author_name: Optional[str] = Field(None)
+    organization: Optional[str] = Field(None)
+    related_links: List[str] = Field(
+        default_factory=list,  # Add this!
+        description="URLs of 2-3 highly related articles found via web search"
+    )
+    total_articles_found: int = Field(...)
+    publication_types: List[AuthorType] = Field(
+        default_factory=list,
+        description="Breakdown of publication types and counts"
+    )
+    notable_publications: List[str] = Field(default_factory=list)
+    expertise_alignment_score: int = Field(
+        None, 
+        description="Estimated score on a 0-100 scale of how well the author's background matches the article topic"
+    )
+    reliability_score_estimate: Optional[int] = Field(
+        None, 
+        description="Estimated reliability on a 0-100 scale"
+    )
+    bias_indicators: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
 
 
 async def author_check_agent(client: AsyncDedalus, article:str) -> AuthorResult:
 	runner = DedalusRunner(client)
 	result = await runner.run(
-		input=f""" 
-
-		The article can be found in:
+    input=f""" 
+        The article can be found in:
         "{article}"
-
-
- 
-
-
-
-		Perform a thorough author credibility analysis:
-
-		1. Identify the author(s) of the article.
-		2. Identify any affiliated organization, publication, or institution.
-		3. Estimate how many articles or publications the author has written.
-		4. Categorize the types of publications (news articles, academic papers, opinion pieces, reports, etc.).
-		5. List some of the author's notable publications.
-		6. Evaluate the author's relevant expertise and background with respect to the article topic.
-		7. Evaluate the reliability of the author and organization based on reputation, past work, and transparency.
-		8. Identify potential bias indicators, advocacy positions, or ideological framing.
-		9. Provide recommendations for reliable articles with similar topics
-		10. Compute an overall author/organization score from 0 to 100. Start from a base score of 0 and increase
-			based on high relevant expertise score and high reliability. If the author is reliable, then also 
-			increase with higher number of articles.
-
-		Also, importantly, use the brave-search mcp to find 2-3 highly related articles to the given one. 
-		Search the web for this and store the links related links. Searching for articles by the same author is a plus.
+        
+        Perform a thorough author credibility analysis:
+        1. Identify the author(s) of the article.
+        2. Identify any affiliated organization, publication, or institution.
+        3. Estimate how many articles or publications the author has written.
+        4. Categorize the types of publications (news articles, academic papers, opinion pieces, reports, etc.).
+        5. List some of the author's notable publications.
+        6. Evaluate the author's relevant expertise and background with respect to the article topic.
+        7. Evaluate the reliability of the author and organization based on reputation, past work, and transparency.
+        8. Identify potential bias indicators, advocacy positions, or ideological framing.
+        9. Provide recommendations for reliable articles with similar topics
+        10. Compute an overall author/organization score from 0 to 100.
+        
+        **IMPORTANT**: Use  given mcp server to find 2-3 highly related articles. 
+        Store the complete URLs in the 'related_links' field. CHECK TO ENSURE THAT You are not returning 
+		links for the same article. DO NOT return links to sources that are by the same author.
 		
-		 
-		In your summary, act like you are a professor reviewing this article for author credibility.
-		Act like its part of a grade review with your student. """,
-
-		model="openai/gpt-4o",
-		response_format=AuthorResult,
-		mcp_servers = ["windsor/brave-search-mcp"],
-		temperature = 0.2
-		)
-	
+        
+        In your summary, act like you are a professor reviewing this article for author credibility.
+        """,
+    model="openai/gpt-4o",
+    response_format=AuthorResult,
+	mcp_servers=["tsion/exa"],  # Privacy-focused web search]
+    temperature=0.2
+)
 		
 	
 	

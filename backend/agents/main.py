@@ -62,6 +62,7 @@ async def main():
     
     print(f"\nAuthor/Org Analysis: {results['author'].summary}")
     print(f"   Score: {results['author'].overall_score}/100")
+    print(f"\n Related Links : {results['author'].related_links}")
     
     print(f"\nEvidence Analysis: {results['evidence'].summary}")
     print(f"   Score: {results['evidence'].overall_score}/100")
@@ -69,9 +70,16 @@ async def main():
     print(f"\nUsefulness Analysis: {results['usefulness'].summary}")
     print(f"   Score: {results['usefulness'].overall_score}/100")
 
+<<<<<<< Updated upstream
     print(f"\nDate and Relevance Analysis: {results['date'].summary}")
     print(f" Relevance: {results['date'].relevance}")
     print(f" Score: {results['date'].overall_score}")
+=======
+    print(f"\n Date and Relevancy check: {results['date'].relevance}")
+    print(f"\n Date and Relevancy check: {results['date'].overall_score}")
+
+    
+>>>>>>> Stashed changes
     
 
     
