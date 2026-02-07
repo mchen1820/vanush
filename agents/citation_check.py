@@ -47,8 +47,12 @@ async def citation_check_agent(client: AsyncDedalus, url: str) -> CitationResult
         mcp_servers=["firecrawl"],
         response_format=CitationResult,
     )
-
-    return CitationResult.model_validate_json(result.final_output)
+    citation_result = CitationResult.model_validate_json(result.final_output)
+    if citation_result.total_citations_found > 0:
+        citation_result.confidence_score = citation_result.verified_citations / citation_result.total_citations_found * 100
+    else:
+        citation_result.confidence_score = 0.0
+    return citation_result
 
 
 async def main():
