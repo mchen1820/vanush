@@ -36,8 +36,6 @@ async def evidence_check_agent(client: AsyncDedalus, url: str, central_claim: st
     runner = DedalusRunner(client)
     result = await runner.run(
         input=f"""Analyze the academic paper at: {url}
-        If URL is none, analyze the citations in the provided text. Else, ignore the input text. 
-
 
         The central claim of this paper has been identified as:
         "{central_claim}"
@@ -59,64 +57,4 @@ async def evidence_check_agent(client: AsyncDedalus, url: str, central_claim: st
         mcp_servers=["firecrawl"],
         response_format=EvidenceResult,
     )
-
-    evidence_result = EvidenceResult.model_validate_json(result.final_output)
-
-    # Compute confidence based on how much evidence was actually found and evaluated
-    if evidence_result.total_evidence_found > 0:
-        evidence_result.confidence_score = (
-            evidence_result.supporting_evidence_count / evidence_result.total_evidence_found * 100
-        )
-    else:
-        evidence_result.confidence_score = 0.0
-
-    return evidence_result
-
-
-# async def main():
-#     url = input("Provide URL of academic paper to check evidence: ")
-#     central_claim = input("Provide the central claim to evaluate against: ")
-#     client = AsyncDedalus()
-#     result = await evidence_check_agent(client, url, central_claim)
-
-#     print("\n🔬 Evidence Check Results")
-#     print("=" * 60)
-#     print(f"\n📍 Claim Evaluated:")
-#     print(f"   {result.central_claim_evaluated}")
-#     print(f"\n📊 Scores:")
-#     print(f"   Overall Score: {result.overall_score}/100")
-#     print(f"   Confidence: {result.confidence_score:.1f}/100")
-#     print(f"\n📈 Evidence Breakdown:")
-#     print(f"   Total Evidence Found: {result.total_evidence_found}")
-#     print(f"   Supporting: {result.supporting_evidence_count}")
-#     print(f"   Contradicting: {result.contradicting_evidence_count}")
-#     print(f"   Neutral: {result.neutral_evidence_count}")
-#     print(f"\n🔍 Quality Assessment:")
-#     print(f"   Methodology: {result.methodology_quality}")
-#     print(f"   Data Quality: {result.data_quality}")
-#     print(f"   Logically Consistent: {'Yes' if result.logical_consistency else 'No'}")
-
-#     if result.evidence_items:
-#         print(f"\n📋 Evidence Details:")
-#         for i, item in enumerate(result.evidence_items, 1):
-#             emoji = "✅" if item.supports_claim else "❌"
-#             print(f"   {emoji} [{item.strength.upper()}] {item.description}")
-#             print(f"      → {item.reasoning}")
-
-#     if result.gaps_identified:
-#         print(f"\n⚠️  Gaps Identified:")
-#         for gap in result.gaps_identified:
-#             print(f"     • {gap}")
-
-#     if result.recommendations:
-#         print(f"\n💡 Recommendations:")
-#         for rec in result.recommendations:
-#             print(f"     • {rec}")
-
-#     print(f"\n📝 Summary: {result.summary}")
-#     return result
-
-
-# if __name__ == "__main__":
-#     print("Running evidence_check.py")
-#     asyncio.run(main())
+    return EvidenceResult.model_validate_json(result.final_output)
