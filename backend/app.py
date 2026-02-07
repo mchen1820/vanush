@@ -44,6 +44,142 @@ def clamp_score(value, default: float = 0.0) -> float:
         return default
 
 
+def to_int_score(value, default: int = 0) -> int:
+    try:
+        return int(round(clamp_score(value, default)))
+    except Exception:
+        return default
+
+
+def normalize_result_scores(payload: dict) -> dict:
+    """Convert score-like fields to integers for cleaner UI percentages."""
+    normalized = dict(payload)
+    for key in [
+        "overall_score",
+        "confidence_score",
+        "overall_credibility_score",
+        "alignment_score",
+        "expertise_alignment_score",
+        "reliability_score_estimate",
+    ]:
+        if normalized.get(key) is not None:
+            normalized[key] = to_int_score(normalized[key], default=0)
+    return normalized
+
+
+def _safe_ratio(numerator, denominator) -> float:
+    try:
+        d = float(denominator)
+        if d <= 0:
+            return 0.0
+        return max(0.0, min(1.0, float(numerator) / d))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 0.0
+
+
+def _quality_to_score(value: str | None, default: float = 60.0) -> float:
+    if not value:
+        return default
+    v = value.strip().lower()
+    if "very strong" in v:
+        return 92.0
+    if "strong" in v:
+        return 82.0
+    if "adequate" in v or "moderate" in v:
+        return 65.0
+    if "weak" in v:
+        return 40.0
+    if "not applicable" in v:
+        return default
+    return default
+
+
+def calibrate_scores(citations: dict, bias: dict, author: dict, evidence: dict, usefulness: dict) -> tuple[dict, dict, dict, dict, dict]:
+    """
+    Stabilize score quality using structured agent fields.
+    This avoids LLM score anchoring (e.g., repeated 85 across categories).
+    """
+    citations = dict(citations)
+    bias = dict(bias)
+    author = dict(author)
+    evidence = dict(evidence)
+    usefulness = dict(usefulness)
+
+    # Citation score from verification and source quality signals.
+    citation_model = clamp_score(citations.get("overall_score"), 60.0)
+    total_citations = float(citations.get("total_citations_found") or 0)
+    if total_citations > 0:
+        verified_ratio = _safe_ratio(citations.get("verified_citations") or 0, total_citations)
+        broken_ratio = _safe_ratio(len(citations.get("broken_links") or []), total_citations)
+        flagged_ratio = _safe_ratio(len(citations.get("flagged_citations") or []), total_citations)
+        peer_ratio = _safe_ratio(citations.get("peer_reviewed_count") or 0, total_citations)
+        citation_heuristic = 100.0 * (
+            (0.55 * verified_ratio)
+            + (0.20 * (1.0 - broken_ratio))
+            + (0.15 * peer_ratio)
+            + (0.10 * (1.0 - flagged_ratio))
+        )
+        citations["overall_score"] = round(clamp_score((0.55 * citation_heuristic) + (0.45 * citation_model), 60.0), 1)
+
+    # Bias agent score represents bias intensity (higher = worse), convert to credibility direction.
+    bias_raw = clamp_score(bias.get("overall_score"), 50.0)
+    bias_level = (bias.get("bias_level") or "").strip().lower()
+    if "very low" in bias_level:
+        bias_credibility = 92.0
+    elif "low" in bias_level:
+        bias_credibility = 78.0
+    elif "moderate" in bias_level:
+        bias_credibility = 58.0
+    elif "high" in bias_level and "very high" not in bias_level:
+        bias_credibility = 35.0
+    elif "very high" in bias_level:
+        bias_credibility = 18.0
+    else:
+        bias_credibility = 100.0 - bias_raw
+    bias["overall_score"] = round(clamp_score(bias_credibility, 50.0), 1)
+
+    # Author score blends reliability + expertise + penalties for bias indicators.
+    author_model = clamp_score(author.get("overall_score"), 60.0)
+    reliability = author.get("reliability_score_estimate")
+    expertise = author.get("expertise_alignment_score")
+    author_components = [clamp_score(reliability, 0.0) if reliability is not None else None, clamp_score(expertise, 0.0) if expertise is not None else None]
+    valid_components = [x for x in author_components if x is not None]
+    if valid_components:
+        author_heuristic = sum(valid_components) / len(valid_components)
+        bias_penalty = min(20.0, 4.0 * len(author.get("bias_indicators") or []))
+        author["overall_score"] = round(clamp_score((0.6 * author_heuristic) + (0.4 * author_model) - bias_penalty, 60.0), 1)
+
+    # Evidence score blends support/contradiction structure and methodology/data quality.
+    evidence_model = clamp_score(evidence.get("overall_score"), 60.0)
+    total_evidence = float(evidence.get("total_evidence_found") or 0)
+    if total_evidence > 0:
+        support_ratio = _safe_ratio(evidence.get("supporting_evidence_count") or 0, total_evidence)
+        contradict_ratio = _safe_ratio(evidence.get("contradicting_evidence_count") or 0, total_evidence)
+        method_score = _quality_to_score(evidence.get("methodology_quality"), default=60.0)
+        data_score = _quality_to_score(evidence.get("data_quality"), default=60.0)
+        logical_bonus = 8.0 if bool(evidence.get("logical_consistency")) else -8.0
+        gap_penalty = min(20.0, 3.0 * len(evidence.get("gaps_identified") or []))
+        evidence_heuristic = (
+            55.0
+            + (25.0 * support_ratio)
+            - (20.0 * contradict_ratio)
+            + ((method_score - 60.0) * 0.2)
+            + ((data_score - 60.0) * 0.2)
+            + logical_bonus
+            - gap_penalty
+        )
+        evidence["overall_score"] = round(clamp_score((0.5 * evidence_heuristic) + (0.5 * evidence_model), 60.0), 1)
+
+    # Usefulness score should primarily track alignment_score if present.
+    usefulness_model = clamp_score(usefulness.get("overall_score"), 60.0)
+    alignment = usefulness.get("alignment_score")
+    if alignment is not None:
+        alignment_score = clamp_score(alignment, usefulness_model)
+        usefulness["overall_score"] = round(clamp_score((0.75 * alignment_score) + (0.25 * usefulness_model), usefulness_model), 1)
+
+    return citations, bias, author, evidence, usefulness
+
+
 def normalize_purpose(purpose: str | None) -> str:
     if not purpose:
         return "general credibility analysis"
@@ -703,7 +839,26 @@ def format_results(
     date = results["date"].model_dump() if "date" in results else {}
     synthesis = results["synthesis"].model_dump()
 
-    overall_credibility = round(clamp_score(synthesis.get("overall_credibility_score"), 0.0))
+    citations, bias, author, evidence, usefulness = calibrate_scores(
+        citations=citations,
+        bias=bias,
+        author=author,
+        evidence=evidence,
+        usefulness=usefulness,
+    )
+
+    claim = normalize_result_scores(claim)
+    citations = normalize_result_scores(citations)
+    bias = normalize_result_scores(bias)
+    author = normalize_result_scores(author)
+    evidence = normalize_result_scores(evidence)
+    usefulness = normalize_result_scores(usefulness)
+    date = normalize_result_scores(date)
+    synthesis = normalize_result_scores(synthesis)
+
+    organization_check = normalize_result_scores(build_organization_check(author))
+    relevancy_check = normalize_result_scores(build_relevancy_check(date, citations))
+    overall_credibility = to_int_score(synthesis.get("overall_credibility_score"), 0)
 
     return {
         "metadata": build_metadata(source, article_text, claim, author, date, source_meta_override=source_meta_override),
@@ -713,8 +868,8 @@ def format_results(
         "evidence_check": evidence,
         "usefulness_check": usefulness,
         "citation_check": citations,
-        "organization_check": build_organization_check(author),
-        "relevancy_check": build_relevancy_check(date, citations),
+        "organization_check": organization_check,
+        "relevancy_check": relevancy_check,
         "recommended_articles": build_recommended_articles(author, usefulness),
         "synthesis": synthesis,
     }

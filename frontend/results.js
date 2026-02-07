@@ -60,21 +60,22 @@ function updateMetadata(metadata) {
 function updateOverallScore(score) {
     const overallPie = document.querySelector('.overall-pie');
     const pieValue = document.querySelector('.pie-value');
+    const normalizedScore = Math.round(Number(score) || 0);
     
     if (overallPie && pieValue) {
-        overallPie.style.setProperty('--p', score);
-        pieValue.textContent = score;
+        overallPie.style.setProperty('--p', normalizedScore);
+        pieValue.textContent = normalizedScore;
     }
     
     const scoreDescription = document.querySelector('.score-description');
     if (scoreDescription) {
-        if (score >= 80) {
+        if (normalizedScore >= 80) {
             scoreDescription.textContent = 'Excellent - Highly trustworthy and credible';
-        } else if (score >= 65) {
+        } else if (normalizedScore >= 65) {
             scoreDescription.textContent = 'Good - Generally trustworthy with minor concerns';
-        } else if (score >= 50) {
+        } else if (normalizedScore >= 50) {
             scoreDescription.textContent = 'Average - Use with caution and verify claims';
-        } else if (score >= 35) {
+        } else if (normalizedScore >= 35) {
             scoreDescription.textContent = 'Below Average - Significant credibility concerns';
         } else {
             scoreDescription.textContent = 'Poor - Not recommended as a reliable source';
@@ -100,7 +101,7 @@ function updateIndividualScores(results) {
             const data = results[mapping.key];
             
             if (data && data.overall_score !== undefined) {
-                const score = data.overall_score;
+                const score = Math.round(Number(data.overall_score) || 0);
                 
                 const pie = card.querySelector('.pie');
                 const pieText = card.querySelector('.pie-text');
