@@ -2,27 +2,16 @@
 // INDEX PAGE - Form submission and analysis
 // ============================================
 
-/*
- * BACKEND INTEGRATION INSTRUCTIONS:
- * 
- * Currently using MOCK DATA for testing (see getMockAnalysisData function below)
- * 
- * To switch to real backend:
- * 1. In the analyze button handler, replace:
- *    const result = getMockAnalysisData(purpose);
- *    
- *    With the commented code that calls the real API:
- *    if (url) result = await analyzeUrl(url, purpose);
- *    else if (text) result = await analyzeText(text, purpose);
- *    else if (pdfFile) result = await analyzePdf(pdfFile, purpose);
- * 
- * 2. Make sure Flask backend is running: python app.py
- * 
- * 3. Change the delay from 3000ms to 0 for instant redirect
- */
-
 // API Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = (() => {
+    if (window.CLARITY_API_BASE_URL) {
+        return window.CLARITY_API_BASE_URL;
+    }
+    if (window.location.protocol.startsWith('http')) {
+        return `${window.location.origin}/api`;
+    }
+    return 'http://localhost:5000/api';
+})();
 
 // ============================================
 // FORM SUBMISSION & ANALYSIS
@@ -46,24 +35,37 @@ document.addEventListener('DOMContentLoaded', function() {
             const pdfFile = pdfInput?.files[0];
             const purpose = purposeInput?.value.trim();
 
-            // Validate that at least one input is provided
-            if (!url && !text && !pdfFile) {
+            const inputCount = [Boolean(url), Boolean(text), Boolean(pdfFile)].filter(Boolean).length;
+
+            // Validate that exactly one input is provided
+            if (inputCount === 0) {
                 showNotification('Please provide an article URL, text, or PDF file to analyze.', 'warning');
+                return;
+            }
+            if (inputCount > 1) {
+                showNotification('Use only one input method at a time (URL, text, or PDF).', 'warning');
                 return;
             }
 
             // Show loading with animation
             showLoadingAnimation();
+            analyzeBtn.disabled = true;
 
             try {
-                // TEMPORARY: Use mock data until backend is integrated
-                const result = getMockAnalysisData(purpose);
+                let result;
+                if (url) {
+                    result = await analyzeUrl(url, purpose);
+                } else if (text) {
+                    result = await analyzeText(text, purpose);
+                } else {
+                    result = await analyzePdf(pdfFile, purpose);
+                }
 
                 // Store results in sessionStorage
                 sessionStorage.setItem('analysisResult', JSON.stringify(result));
 
-                // Add delay for animation effect
-                await new Promise(resolve => setTimeout(resolve, 3000));
+                // Short delay so transition is visible after a real response.
+                await new Promise(resolve => setTimeout(resolve, 450));
 
                 // Redirect to results page
                 window.location.href = 'results.html';
@@ -71,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 console.error('Analysis error:', error);
                 showNotification('Error analyzing article: ' + error.message, 'error');
-                loading.style.display = 'none';
+                hideLoadingAnimation();
+                analyzeBtn.disabled = false;
             }
         });
     }
