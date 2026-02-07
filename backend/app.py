@@ -91,6 +91,145 @@ def parse_date_to_human(date_value: str | None) -> str | None:
     return date_value
 
 
+def normalize_source_excerpt(text: str | None, max_len: int = 700) -> str | None:
+    if not text:
+        return None
+
+    cleaned = re.sub(r"\s+", " ", text).strip()
+    cleaned = re.sub(r"^(abstract|introduction)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"(\w)-\s+(\w)", r"\1\2", cleaned)  # de-hyphenate line wraps
+
+    if len(cleaned.split()) < 18:
+        return None
+    return cleaned[:max_len]
+
+
+def extract_source_excerpt(soup: BeautifulSoup) -> str | None:
+    """Extract abstract-like text from page metadata or common abstract containers."""
+    meta_selectors = [
+        "meta[name='citation_abstract']",
+        "meta[name='dc.description']",
+        "meta[name='description']",
+        "meta[property='og:description']",
+    ]
+    for selector in meta_selectors:
+        tag = soup.select_one(selector)
+        if tag and tag.get("content"):
+            normalized = normalize_source_excerpt(tag.get("content"))
+            if normalized:
+                return normalized
+
+    container_selectors = [
+        "#Abs1-content p",           # Springer
+        "section#Abs1 p",            # Springer fallback
+        "[data-title='Abstract'] p",
+        "section.abstract p",
+        "div.Abstract p",
+        "div.abstract p",
+    ]
+    for selector in container_selectors:
+        tags = soup.select(selector)
+        if not tags:
+            continue
+        joined = " ".join(tag.get_text(" ", strip=True) for tag in tags[:2] if tag.get_text(strip=True))
+        normalized = normalize_source_excerpt(joined)
+        if normalized:
+            return normalized
+
+    return None
+
+
+def clean_excerpt_candidate(text: str, title_guess: str = "") -> str:
+    cleaned = re.sub(r"\s+", " ", text).strip()
+    cleaned = re.sub(r"^(review|article)\s+", "", cleaned, flags=re.IGNORECASE)
+
+    if title_guess:
+        title_norm = re.sub(r"\s+", " ", title_guess).strip()
+        if title_norm and cleaned.lower().startswith(title_norm.lower()):
+            cleaned = cleaned[len(title_norm):].strip(" -:;,")
+
+    # If abstract/introduction exists in candidate, prefer content after it.
+    marker_match = re.search(r"\b(abstract|introduction)\b[:\-\s]*", cleaned, flags=re.IGNORECASE)
+    if marker_match and marker_match.end() < len(cleaned):
+        tail = cleaned[marker_match.end() :].strip()
+        if len(tail.split()) >= 12:
+            cleaned = tail
+
+    cleaned = re.sub(r"^(abstract|introduction)\s*[:\-]?\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b(Received|Accepted|Published online):\s*[^|•]{0,120}", " ", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s+©.*$", "", cleaned)
+    cleaned = re.sub(r"(\w)-\s+(\w)", r"\1\2", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def looks_like_real_excerpt(text: str) -> bool:
+    if not text:
+        return False
+
+    normalized = re.sub(r"\s+", " ", text).strip()
+    words = normalized.split()
+    lower = normalized.lower()
+
+    if len(words) < 24:
+        return False
+    if not re.search(r"[.!?]", normalized) and len(words) < 35:
+        return False
+
+    bad_markers = [
+        "received:",
+        "accepted:",
+        "published online",
+        "doi",
+        "open access",
+        "all rights reserved",
+        "references",
+        "supplementary",
+    ]
+    if any(marker in lower for marker in bad_markers):
+        return False
+
+    if sum(ch in "/|•" for ch in normalized) > 6:
+        return False
+
+    return True
+
+
+def build_excerpt(article_text: str, title_guess: str = "", max_len: int = 600) -> str:
+    if not article_text:
+        return ""
+
+    text = article_text.strip()
+    if not text:
+        return ""
+
+    blocks = [block.strip() for block in re.split(r"\n{2,}", text) if block.strip()]
+    if len(blocks) <= 1:
+        blocks = [line.strip() for line in text.splitlines() if line.strip()]
+
+    candidates: list[str] = []
+    for i in range(len(blocks)):
+        for span in (1, 2, 3):
+            if i + span > len(blocks):
+                break
+            joined = " ".join(blocks[i : i + span])
+            candidate = clean_excerpt_candidate(joined, title_guess=title_guess)
+            if candidate and candidate not in candidates:
+                candidates.append(candidate)
+
+    for candidate in candidates:
+        if looks_like_real_excerpt(candidate):
+            return candidate[:max_len]
+
+    normalized_full = re.sub(r"\s+", " ", text).strip()
+    marker_match = re.search(r"\b(abstract|introduction)\b[:\-\s]*(.+)$", normalized_full, flags=re.IGNORECASE)
+    if marker_match:
+        marker_tail = clean_excerpt_candidate(marker_match.group(2), title_guess=title_guess)
+        if marker_tail:
+            return marker_tail[:max_len]
+
+    return clean_excerpt_candidate(normalized_full, title_guess=title_guess)[:max_len]
+
+
 def fetch_source_metadata(url: str) -> dict:
     """
     Extract metadata from publisher pages so UI title/author/date are accurate.
@@ -145,11 +284,13 @@ def fetch_source_metadata(url: str) -> dict:
         "meta[property='article:published_time']",
         "meta[name='dc.date']",
     )
+    excerpt = extract_source_excerpt(soup)
 
     return {
         "title": normalize_title(title),
         "authors": authors,
         "date": parse_date_to_human(raw_date),
+        "excerpt": excerpt,
     }
 
 
@@ -240,12 +381,13 @@ def build_metadata(source: str, article_text: str, claim_result: dict, author_re
     author_from_source = ", ".join(source_meta.get("authors") or [])
     author_value = author_from_source or author_result.get("author_name") or "Unknown"
     date_value = source_meta.get("date") or "No publication date found"
+    preview_text = source_meta.get("excerpt") or build_excerpt(article_text, title_guess=title_guess, max_len=600)
 
     return {
         "title": title_guess,
         "author": author_value,
         "date": date_value,
-        "preview_text": article_text[:500],
+        "preview_text": preview_text,
         "central_claim": claim_result.get("central_claim", ""),
         "article_summary": claim_result.get("summary", ""),
         "source": source_host,
